@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_view"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+
+
+    <Button
+        android:id="@+id/add_item"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:height="50dp"
+        android:background="@drawable/add_item_button_selector"
+        android:text="@string/add_new_time"
+        android:textColor="@color/cardview_light_background"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/save_items"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:height="50dp"
+        android:background="@drawable/save_item_button_selector"
+        android:text="@string/save_timetable"
+        android:textColor="@color/cardview_light_background"
+        app:layout_constraintWidth_percent="0.3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

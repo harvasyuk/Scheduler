@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:summary="@string/pre_summary_feedback"
+        android:title="@string/pre_title_feedback">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="mailto:harvasyuk@gmail.com">
+        </intent>
+    </Preference>
+
+    <PreferenceCategory android:title="@string/lessons_pref_category">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:key="groupListPreference"
+            android:summary="@string/group_choose_summary"
+            android:title="@string/group_choose_title" />
+
+        <PreferenceScreen
+            android:key="scheduleManager"
+            android:summary="@string/time_settings_summary"
+            android:title="@string/time_settings_title"
+            android:persistent="false">
+
+            <intent android:action="com.scheduler.settings.ScheduleEditorActivity"/>
+
+        </PreferenceScreen>
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/account_pref_category">
+
+        <Preference
+            android:key="signout"
+            android:title="@string/sign_out"
+            android:summary="@string/sign_out_summary">
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

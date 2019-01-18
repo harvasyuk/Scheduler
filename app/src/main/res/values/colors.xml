@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light theme -->
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#eeeeee</color>
+    <color name="colorAccent">#2196f3</color>
+
+    <!-- Lesson item -->
+    <color name="orangeLight">#ffe0b2</color>
+    <color name="orangeAccent">#ffd180</color>
+    <color name="orangeShadow">#FB8C00</color>
+    <color name="orangeRipple">#e3efc588</color>
+
+    <color name="blueLight">#BBDEFB</color>
+    <color name="rippleBreak">#cf84b8e2</color>
+
+    <color name="whiteDarker">#f7f7f7</color>
+
+    <!-- Progress bar -->
+    <color name="outerRing">#1976d2</color>
+    <color name="innerRing">#2196f3</color>
+    <color name="white">#ffffff</color>
+    <color name="light_grey">#ededed</color>
+    <color name="background_grey">#FAFAFA</color>
+
+    <!--Buttons-->
+    <color name="cancel_button">#eeeeee</color>
+    <color name="white_button_ripple">#bdbdbd</color>
+    <color name="dark_button">#424242</color>
+
+
+    <!-- Dark Theme -->
+
+
+    <!-- Blue theme -->
+    <color name="colorPrimaryDarkBlue">#1976D2</color>
+    <color name="colorPrimaryBlue">#1E88E5</color>
+    <color name="colorAccentBlue">#2196f3</color>
+</resources>
