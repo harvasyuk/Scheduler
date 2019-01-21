@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
+        android:layout="@layout/preference_item"
         android:summary="@string/pre_summary_feedback"
-        android:title="@string/pre_title_feedback">
+        android:title="@string/pre_title_feedback"
+        android:icon="@drawable/ic_feedback">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="mailto:harvasyuk@gmail.com">
@@ -14,18 +16,22 @@
     <PreferenceCategory android:title="@string/lessons_pref_category">
 
         <ListPreference
+            android:layout="@layout/preference_item"
+            android:icon="@drawable/ic_group"
             android:defaultValue="1"
             android:key="groupListPreference"
             android:summary="@string/group_choose_summary"
             android:title="@string/group_choose_title" />
 
         <PreferenceScreen
+            android:layout="@layout/preference_item"
+            android:icon="@drawable/ic_edit"
             android:key="scheduleManager"
+            android:persistent="false"
             android:summary="@string/time_settings_summary"
-            android:title="@string/time_settings_title"
-            android:persistent="false">
+            android:title="@string/time_settings_title">
 
-            <intent android:action="com.scheduler.settings.ScheduleEditorActivity"/>
+            <intent android:action="com.scheduler.settings.ScheduleEditorActivity" />
 
         </PreferenceScreen>
 
@@ -35,6 +41,8 @@
     <PreferenceCategory android:title="@string/account_pref_category">
 
         <Preference
+            android:layout="@layout/preference_item"
+            android:icon="@drawable/ic_signout"
             android:key="signout"
             android:title="@string/sign_out"
             android:summary="@string/sign_out_summary">
