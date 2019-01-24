@@ -175,32 +175,35 @@ public class TimeManager {
                 nextStart = LocalTime.parse(timeList.get(i + 1).getLessonStart());
             } catch (Exception ignored) { }
 
-            if (timeNow.isAfter(start) && timeNow.isBefore(end)) {
-                item[0] = i;
-                item[1] = 0; // 0 is for lesson
+            try {
+                if (timeNow.isAfter(start) && timeNow.isBefore(end)) {
+                    item[0] = i;
+                    item[1] = 0; // 0 is for lesson
 
-                time = (end.getHourOfDay() - timeNow.getHourOfDay()) * 3600 * 1000 +
-                        (end.getMinuteOfHour() - timeNow.getMinuteOfHour()) * 60 * 1000 +
-                        (end.getSecondOfMinute() - timeNow.getSecondOfMinute()) * 1000 +
-                        (end.getMillisOfSecond() - timeNow.getMillisOfSecond());
+                    time = (end.getHourOfDay() - timeNow.getHourOfDay()) * 3600 * 1000 +
+                            (end.getMinuteOfHour() - timeNow.getMinuteOfHour()) * 60 * 1000 +
+                            (end.getSecondOfMinute() - timeNow.getSecondOfMinute()) * 1000 +
+                            (end.getMillisOfSecond() - timeNow.getMillisOfSecond());
 
-                overallTime = (end.getHourOfDay() - start.getHourOfDay()) * 60 +
-                        (end.getMinuteOfHour() - start.getMinuteOfHour());
-
-
-            } else if (timeNow.isAfter(end) && timeNow.isBefore(nextStart)) {
-                item[0] = (byte) (i + 1);
-                item[1] = 1; // 1 is for break
-
-                time = (nextStart.getHourOfDay() - timeNow.getHourOfDay()) * 3600 * 1000 +
-                        (nextStart.getMinuteOfHour() - timeNow.getMinuteOfHour()) * 60 * 1000 +
-                        (nextStart.getSecondOfMinute() - timeNow.getSecondOfMinute()) * 1000 +
-                        (nextStart.getMillisOfSecond() - timeNow.getMillisOfSecond());
+                    overallTime = (end.getHourOfDay() - start.getHourOfDay()) * 60 +
+                            (end.getMinuteOfHour() - start.getMinuteOfHour());
 
 
-                overallTime = (nextStart.getHourOfDay() - end.getHourOfDay()) * 60 +
-                        (nextStart.getMinuteOfHour() - end.getMinuteOfHour());
-            }
+                } else if (timeNow.isAfter(end) && timeNow.isBefore(nextStart)) {
+                    item[0] = (byte) (i + 1);
+                    item[1] = 1; // 1 is for break
+
+                    time = (nextStart.getHourOfDay() - timeNow.getHourOfDay()) * 3600 * 1000 +
+                            (nextStart.getMinuteOfHour() - timeNow.getMinuteOfHour()) * 60 * 1000 +
+                            (nextStart.getSecondOfMinute() - timeNow.getSecondOfMinute()) * 1000 +
+                            (nextStart.getMillisOfSecond() - timeNow.getMillisOfSecond());
+
+
+                    overallTime = (nextStart.getHourOfDay() - end.getHourOfDay()) * 60 +
+                            (nextStart.getMinuteOfHour() - end.getMinuteOfHour());
+                }
+            } catch (Exception ignored) {}
+
         }
         return item;
     }

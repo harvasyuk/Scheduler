@@ -53,7 +53,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     void addItem(boolean flag) {
         addingItem = flag;
-        notifyItemInserted(getItemCount());
+        if (flag) {
+            notifyItemInserted(getItemCount());
+        }
     }
 
 
