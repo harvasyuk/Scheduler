@@ -10,11 +10,11 @@ import android.widget.TimePicker;
 import com.scheduler.LessonTime;
 import com.scheduler.R;
 import com.scheduler.SimpleDividerItemDecoration;
+import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.TimeManager;
 import com.scheduler.logic.TimeViewModel;
 import com.scheduler.logic.Utils;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -30,10 +30,12 @@ public class ScheduleEditor extends AppCompatActivity {
     private ScheduleAdapter scheduleAdapter;
     private Button addButton;
     private Button saveButton;
+    private RecyclerView recyclerView;
     private TimeViewModel timeViewModel;
-    public boolean upEnabled;
     private LessonTime lessonTime;
+    private ScheduleManager scheduleManager;
     private boolean insert = false;
+    public boolean upEnabled;
 
 
     @Override
@@ -45,9 +47,11 @@ public class ScheduleEditor extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(upEnabled);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        scheduleManager = new ScheduleManager(this.getApplication());
+
         addButton = findViewById(R.id.add_item);
         saveButton = findViewById(R.id.save_items);
-        RecyclerView recyclerView = findViewById(R.id.timeTableRecycler);
+        recyclerView = findViewById(R.id.timeTableRecycler);
         recyclerView.setHasFixedSize(true);
 
         saveButton.setText(R.string.save_timetable);
@@ -84,8 +88,7 @@ public class ScheduleEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 scheduleAdapter.addItem(true);
-//                recyclerView.smoothScrollToPosition(Objects.requireNonNull(
-//                        recyclerView.getAdapter()).getItemCount() - 1);
+                recyclerView.smoothScrollToPosition(scheduleAdapter.getItemCount() - 1);
             }
         });
 
@@ -113,7 +116,6 @@ public class ScheduleEditor extends AppCompatActivity {
 
     private void setTimeData(final int position, final char state) {
         int listSize = scheduleAdapter.getLessons().size();
-        List<LessonTime> lessonTimes = scheduleAdapter.getLessons();
         String time;
         lessonTime = null;
         String oldTimeStart = null;
@@ -177,6 +179,7 @@ public class ScheduleEditor extends AppCompatActivity {
 
                         if (insert) {
                             timeViewModel.insert(lessonTime);
+                            scheduleManager.insertEmptyLesson();
                             insert = false;
                             scheduleAdapter.addItem(false);
                         } else {

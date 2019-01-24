@@ -35,13 +35,13 @@ public interface LessonDao {
 //    @Query("SELECT * FROM lesson_table WHERE subject_name LIKE :name")
 //    Lesson findByName(String name);
 //
-//    //returns lesson count (for one day)
-//    @Query("SELECT COUNT(id) FROM lesson_table WHERE day_of_week IN (:dayOfWeek)")
-//    int getDayLessonCount(int dayOfWeek);
+    //returns lesson count (for one day)
+    @Query("SELECT COUNT(id) FROM lesson_table WHERE day_of_week IN (:dayOfWeek)")
+    int getLessonCountDay(int dayOfWeek);
 //
-//    //also returns lesson count (for whole week)
-//    @Query("SELECT COUNT(id) FROM lesson_table")
-//    int getWeekLessonCount();
+    //also returns lesson count (for whole week)
+    @Query("SELECT COUNT(id) FROM lesson_table")
+    int getLessonCount();
 //
 //    @Query("SELECT id FROM lesson_table WHERE day_of_week IN (:dayOfWeek) AND lesson_number IN (:lessonNumber)")
 //    int getLessonID(int dayOfWeek, String lessonNumber);

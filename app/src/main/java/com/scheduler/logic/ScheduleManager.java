@@ -16,7 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.scheduler.Lesson;
 import com.scheduler.UserAccount;
+import com.scheduler.database.LessonsDatabase;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +79,17 @@ public class ScheduleManager {
                 }
             }
         });
+    }
+
+
+    public void insertEmptyLesson() {
+        String lessonNumber = String.valueOf(scheduleRepository.getLessonCountDay() + 1);
+        int count = scheduleRepository.getLessonCount();
+
+        for (int i = Calendar.MONDAY; i <= Calendar.FRIDAY; i++) {
+            Lesson lesson = new Lesson(count++, i, lessonNumber, "", "", "");
+            scheduleRepository.insert(lesson);
+        }
     }
 
 

@@ -129,9 +129,11 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     viewHolder.cardView.setOutlineSpotShadowColor(ContextCompat.getColor(context, R.color.orangeShadow));
+                    viewHolder.cardView.setElevation(18f);
+                } else {
+                    viewHolder.cardView.setElevation(12f);
                 }
                 viewHolder.cardView.setBackground(ContextCompat.getDrawable(context, R.drawable.ripple_active_recycler_item));
-                viewHolder.cardView.setElevation(18f);
                 viewHolder.lessonProgress.setVisibility(View.VISIBLE);
                 viewHolder.countdownText.setVisibility(View.VISIBLE);
 
@@ -141,9 +143,11 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     viewHolder.cardView.setOutlineSpotShadowColor(ContextCompat.getColor(context, R.color.colorAccent));
+                    viewHolder.cardView.setElevation(18f);
+                } else {
+                    viewHolder.cardView.setElevation(14f);
                 }
                 viewHolder.cardView.setBackground(ContextCompat.getDrawable(context, R.drawable.ripple_breack_recycler_item));
-                viewHolder.cardView.setElevation(18f);
                 viewHolder.lessonProgress.setVisibility(View.VISIBLE);
                 viewHolder.countdownText.setVisibility(View.VISIBLE);
             }

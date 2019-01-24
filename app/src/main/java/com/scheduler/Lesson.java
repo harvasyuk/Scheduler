@@ -26,7 +26,7 @@ public class Lesson {
     private String room;
 
 
-    public Lesson(int id,int dayOfWeek, String lessonNumber, String subjectName, String teacherName, String room) {
+    public Lesson(int id, int dayOfWeek, String lessonNumber, String subjectName, String teacherName, String room) {
         this.id = id;
         this.dayOfWeek = dayOfWeek;
         this.lessonNumber = lessonNumber;

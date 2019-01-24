@@ -1,6 +1,5 @@
 package com.scheduler.settings;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     private Context context;
     private boolean addingItem = false;
-    private TimePickerDialog timePickerDialog;
     private List<LessonTime> timeList = new ArrayList<>();
     private OnItemClick onItemClick;
 
@@ -55,7 +53,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     void addItem(boolean flag) {
         addingItem = flag;
-        notifyDataSetChanged();
+        notifyItemInserted(getItemCount());
     }
 
 

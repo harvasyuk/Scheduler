@@ -7,6 +7,7 @@ import com.scheduler.Lesson;
 import com.scheduler.database.LessonDao;
 import com.scheduler.database.LessonsDatabase;
 
+import java.util.Calendar;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
@@ -33,6 +34,14 @@ class ScheduleRepository {
 
     LiveData<List<Lesson>> getLessons() {
         return lessons;
+    }
+
+    int getLessonCount() {
+        return lessonDao.getLessonCount();
+    }
+
+    int getLessonCountDay() {
+        return lessonDao.getLessonCountDay(Calendar.MONDAY);
     }
 
     void insert(Lesson lesson) {
