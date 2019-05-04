@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,16 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.scheduler.R;
 
 import java.util.ArrayList;
@@ -27,28 +33,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
+
 
 public class GroupFragment extends Fragment {
 
-    private DatabaseReference reference;
-    private FirebaseDatabase database;
+    private FirebaseFirestore firestore;
     private EditText searchField;
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> groupList = new ArrayList<>();
-    private String groupKey;
+    private String university;
 
 
     void setGroupKey(String universityName)
     {
-        groupKey = universityName;
+        university = universityName;
     }
 
 
     //this method is used to saveItems the reference after group has been chosen
     void updateReference() {
-        reference = database.getReference("universities/" + groupKey + "/group");
-        showGroups("");
+
+        if (university != null) showGroups("");
     }
 
 
@@ -57,8 +64,7 @@ public class GroupFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_first_setting, container, false);
 
-        database = FirebaseDatabase.getInstance();
-        reference = database.getReference("universities/" + groupKey + "/group");
+        firestore = FirebaseFirestore.getInstance();
 
         searchField = rootView.findViewById(R.id.search_field);
         listView = rootView.findViewById(R.id.universities_list);
@@ -74,7 +80,7 @@ public class GroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        showGroups("");
+        if (university != null) showGroups("");
 
         //showing groups that match your search
         searchField.addTextChangedListener(new TextWatcher() {
@@ -86,7 +92,7 @@ public class GroupFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                showGroups(searchField.getText().toString());
+                if (university != null) showGroups(searchField.getText().toString());
             }
 
             @Override
@@ -101,7 +107,7 @@ public class GroupFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("groupListPreference", groupList.get(position));
+                editor.putString("groupName", groupList.get(position));
                 editor.apply();
             }
         });
@@ -113,26 +119,28 @@ public class GroupFragment extends Fragment {
         //clearing old list before showing the new one
         groupList.clear();
 
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+        firestore.collection("universities").document(university).collection("departments")
+                .document("ComputerScience").collection("groups")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
 
-                    if (search.equals("")) {
-                        groupList.add(ds.getKey());
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-                    } else if (Objects.requireNonNull(ds.getKey()).contains(search)) {
-                        groupList.add(ds.getKey());
+                                if (search.equals("")) {
+                                    groupList.add(document.getId());
+
+                                } else if (document.getId().contains(search)) {
+                                    groupList.add(document.getId());
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
                     }
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-
+                });
     }
 }

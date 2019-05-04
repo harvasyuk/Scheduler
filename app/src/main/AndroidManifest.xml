@@ -82,7 +82,13 @@
             android:name=".firstSetting.FirstSettingActivity"
             android:label="Welcome"
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name=".firstSetting.FirstSettingActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".firstSetting.ChooseDatabaseActivity"

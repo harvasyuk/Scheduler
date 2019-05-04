@@ -1,7 +1,9 @@
 package com.scheduler.firstSetting;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 
 import com.scheduler.MainActivity;
 import com.scheduler.R;
+import com.scheduler.logic.TimeManager;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,6 +70,10 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
                     Intent intent = new Intent(FirstSettingActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+                    TimeManager time = new TimeManager(getApplication());
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    time.downloadData(prefs.getString("universityName", "chnu"));
+
                     startActivity(intent);
                     finish();
                 }
@@ -79,7 +86,7 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 0) {
+                if (position == 0) {
                     headerText.setText(R.string.choose_university);
                     backButton.setVisibility(View.GONE);
 

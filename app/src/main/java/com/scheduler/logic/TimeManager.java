@@ -37,6 +37,8 @@ public class TimeManager {
     private final static String DATA = "data";
     private final static String TIMETABLE = "timetable";
     private final static String UPDATED = "updated";
+    private final static String UNIVERSITIES = "universities";
+
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private SharedPreferences prefs;
@@ -47,6 +49,7 @@ public class TimeManager {
     private Application application;
 
     private Map<String, Object> timeTable;
+    private List<String> timetable;
 
     private int time;
     private int overallTime;
@@ -93,20 +96,27 @@ public class TimeManager {
 
 
     public void downloadData() {
-        DocumentReference docRef = firestore.collection(USERS).document(account.getPersonEmail())
-                .collection(DATA).document(TIMETABLE);
 
+        getFromFirestore(firestore.collection(USERS).document(account.getPersonEmail())
+                .collection(DATA).document(TIMETABLE));
+    }
+
+    public void downloadData(String university) {
+
+        getFromFirestore(firestore.collection(UNIVERSITIES).document(university));
+    }
+
+
+    private void getFromFirestore(DocumentReference docRef) {
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document = task.getResult();
                 if (document != null) {
-                    timeTable = task.getResult().getData();
+                    timetable = (List<String>) document.get("timetable");
+                    setLocalDatabase(timetable);
                 } else {
                     Log.d("Firestore error", "cannot get snapshot");
-                }
-                if (timeTable != null) {
-                    setLocalDatabase(timeTable);
                 }
             }
         });
@@ -146,17 +156,13 @@ public class TimeManager {
     }
 
 
-    private void setLocalDatabase(Map<String, Object> schedule) {
+    private void setLocalDatabase(List<String> timetable) {
         TimeRepository repository = new TimeRepository(application);
-        Object[] values = schedule.values().toArray(new Object[0]);
-
-        @SuppressWarnings("unchecked")
-        List<String> stringTimeList = (ArrayList) values[0];
         int j = -1;
 
-        for (int i = 0; i < stringTimeList.size(); i+=2) {
+        for (int i = 0; i < timetable.size(); i+=2) {
             if(i % 2 == 0) j++;
-            LessonTime lessonTime = new LessonTime(j, stringTimeList.get(i), stringTimeList.get(i + 1));
+            LessonTime lessonTime = new LessonTime(j, timetable.get(i), timetable.get(i + 1));
             repository.insert(lessonTime);
         }
     }

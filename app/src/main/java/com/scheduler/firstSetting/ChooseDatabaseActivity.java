@@ -24,10 +24,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.scheduler.MainActivity.LOCAL_DATABASE;
-import static com.scheduler.MainActivity.REMOTE_DATABASE;
-
 public class ChooseDatabaseActivity extends AppCompatActivity {
+
+    private static final String LOCAL_DATABASE = "local";
+    private static final String REMOTE_DATABASE = "remote";
 
     private Button searchSchedule;
     private Button createSchedule;
@@ -35,7 +35,6 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
     private String greetingText;
 
     private UserAccount account;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,18 +98,21 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
         UserAccount account = new UserAccount(this);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(account.getPersonEmail()).
-                collection("data").document("timetable");
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null) {
-                    showAlert();
+        try {
+            DocumentReference docRef = db.collection("users").document(account.getPersonEmail()).
+                    collection("data").document("timetable");
+
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        showAlert();
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception ignored) { }
 
         searchSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +131,6 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
 

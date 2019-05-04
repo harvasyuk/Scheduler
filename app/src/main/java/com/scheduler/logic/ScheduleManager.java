@@ -16,7 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.scheduler.Lesson;
 import com.scheduler.UserAccount;
-import com.scheduler.database.LessonsDatabase;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -33,14 +32,26 @@ import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 public class ScheduleManager {
 
-    private final static String USERS = "users";
-    private final static String DATA = "data";
-    private final static String SCHEDULE = "schedule";
-    private final static String UPDATED = "updated";
+    private static final String USERS = "users";
+    private static final String DATA = "data";
+    private static final String SCHEDULE = "schedule";
+    private static final String UPDATED = "updated";
 
+    private static final String UNIVERSITIES = "universities";
+    private static final String DEPARTMENTS = "departments";
+    private static final String GROUPS = "groups";
+
+    private static String UNIVERSITY;
+    private static String DEPARTMENT;
+    private static String GROUP;
+
+    private static final String LOCAL_DATABASE = "local";
+    private static final String REMOTE_DATABASE = "remote";
+
+    private String databaseType;
     private FirebaseFirestore firestore;
     private DocumentReference docRef;
-    private SharedPreferences prefs;
+    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
     private UserAccount account;
@@ -50,7 +61,11 @@ public class ScheduleManager {
 
     public ScheduleManager(Application application) {
         account = new UserAccount(application);
-        prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
+        databaseType = sharedPreferences.getString("databaseType", LOCAL_DATABASE);
+        UNIVERSITY = sharedPreferences.getString("university", "chnu");
+        DEPARTMENT = sharedPreferences.getString("department", "ComputerScience");
+        GROUP = sharedPreferences.getString("group", "542");
         scheduleRepository = new ScheduleRepository(application);
         setupDatabase();
     }
@@ -58,6 +73,18 @@ public class ScheduleManager {
 
     private void setupDatabase() {
         firestore = FirebaseFirestore.getInstance();
+
+        switch (databaseType) {
+
+            case LOCAL_DATABASE:
+                docRef = firestore.collection(USERS).document(account.getPersonEmail()).
+                        collection(DATA).document(SCHEDULE);
+                break;
+            case REMOTE_DATABASE:
+                docRef = firestore.collection(UNIVERSITIES).document(UNIVERSITY).
+                        collection(DEPARTMENTS).document(DEPARTMENT).collection(GROUPS).document(GROUP);
+                break;
+        }
     }
 
 
@@ -71,7 +98,7 @@ public class ScheduleManager {
                                 @Nullable FirebaseFirestoreException e) {
                 if (document != null && document.exists()) {
                     Log.d(TAG, "Current data: " + document.getData());
-                    editor = prefs.edit();
+                    editor = sharedPreferences.edit();
                     editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
                     editor.apply();
                 } else {
@@ -94,9 +121,6 @@ public class ScheduleManager {
 
 
     public void downloadData() {
-        docRef = firestore.collection(USERS).document(account.getPersonEmail()).
-                collection(DATA).document(SCHEDULE);
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -115,8 +139,7 @@ public class ScheduleManager {
     void uploadData(List<Lesson> lessons) {
         parseLessons(lessons);
 
-        firestore.collection("users").document(account.getPersonEmail()).
-                collection("data").document("schedule").set(schedule)
+        docRef.set(schedule)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

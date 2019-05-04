@@ -34,11 +34,7 @@ import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends AppCompatActivity implements LessonDialog.LessonDialogListener {
 
-    public static final String LOCAL_DATABASE = "local";
-    public static final String REMOTE_DATABASE = "remote";
-
     private SwipeRefreshLayout refreshLayout;
-    private String databaseType;
     private ScheduleManager schedule;
     private int day;
 
@@ -54,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         refreshLayout = findViewById(R.id.refresh);
-        TextView groupName = findViewById(R.id.group_name);
+        //TextView groupName = findViewById(R.id.group_name);
         TextView weekNumber = findViewById(R.id.week_number);
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager mViewPager = findViewById(R.id.container);
@@ -68,11 +64,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        schedule = new ScheduleManager(getApplication());
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        databaseType = sharedPreferences.getString("databaseType", LOCAL_DATABASE);
-        groupName.setText(sharedPreferences.getString("groupListPreference", ""));
+        //groupName.setText(sharedPreferences.getString("groupListPreference", ""));
         weekNumber.setText(R.string.week);
 
         tabLayout.setupWithViewPager(mViewPager);
@@ -83,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem refresh = menu.findItem(R.id.menu_refresh);
-        if (databaseType.equals(REMOTE_DATABASE)) {
-            refresh.setVisible(false);
-        }
+//        MenuItem refresh = menu.findItem(R.id.menu_refresh);
+//        if (databaseType.equals(REMOTE_DATABASE)) {
+//            refresh.setVisible(false);
+//        }
         return true;
     }
 
@@ -190,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         if (mAuth.getCurrentUser() == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
+        } else {
+            schedule = new ScheduleManager(getApplication());
         }
     }
 
