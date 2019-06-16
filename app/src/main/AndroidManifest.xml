@@ -79,7 +79,7 @@
         </activity>
 
         <activity
-            android:name=".firstSetting.FirstSettingActivity"
+            android:name=".firstSetting.SetupActivity"
             android:label="Welcome"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
@@ -91,7 +91,7 @@
         </activity>
 
         <activity
-            android:name=".firstSetting.ChooseDatabaseActivity"
+            android:name=".firstSetting.MatrixActivity"
             android:theme="@style/AppTheme.Blue">
             <intent-filter>
                 <action android:name=".firstSetting.ChooseDatabaseActivity" />

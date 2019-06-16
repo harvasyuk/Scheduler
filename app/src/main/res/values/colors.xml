@@ -27,7 +27,7 @@
     <!--Buttons-->
     <color name="cancel_button">#eeeeee</color>
     <color name="white_button_ripple">#bdbdbd</color>
-    <color name="dark_button">#424242</color>
+    <color name="dark_button">#3D3D3D</color>
 
     <!-- Schedule editor start/end editText -->
     <color name="startEditText">#B3E5FC</color>

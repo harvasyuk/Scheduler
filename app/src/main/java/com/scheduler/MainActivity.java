@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         refreshLayout.setEnabled(false);
         mViewPager.setAdapter(sectionsPagerAdapter);
         mViewPager.setCurrentItem(currentDay());
-        mViewPager.setOffscreenPageLimit(6);
+        mViewPager.setOffscreenPageLimit(5);
 
         //custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -103,12 +103,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
     private void updateSchedule() {
         schedule.downloadData();
-        refreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshLayout.setRefreshing(false);
-            }
-        }, 2000);
+        refreshLayout.postDelayed(() -> refreshLayout.setRefreshing(false), 2000);
     }
 
 

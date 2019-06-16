@@ -32,6 +32,7 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
@@ -44,24 +45,21 @@ public class GroupFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private ArrayList<String> groupList = new ArrayList<>();
     private String university;
+    private String department;
 
 
-    void setGroupKey(String universityName)
-    {
+    private void setGroupKey(String universityName) {
         university = universityName;
     }
 
-
-    //this method is used to saveItems the reference after group has been chosen
-    void updateReference() {
-
-        if (university != null) showGroups("");
+    private void setDepartmentKey(String departmentKey) {
+        department = departmentKey;
+        showGroups("");
     }
 
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_first_setting, container, false);
 
         firestore = FirebaseFirestore.getInstance();
@@ -72,6 +70,10 @@ public class GroupFragment extends Fragment {
         adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), android.R.layout.simple_list_item_1, groupList);
         listView.setAdapter(adapter);
 
+        SharedViewModel model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        model.getSelectedUniversity().observe(this, this::setGroupKey);
+        model.getSelectedDepartment().observe(this, this::setDepartmentKey);
+
         return rootView;
     }
 
@@ -80,7 +82,7 @@ public class GroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (university != null) showGroups("");
+        if (department != null) showGroups("");
 
         //showing groups that match your search
         searchField.addTextChangedListener(new TextWatcher() {
@@ -92,7 +94,7 @@ public class GroupFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                if (university != null) showGroups(searchField.getText().toString());
+                if (department != null) showGroups(searchField.getText().toString());
             }
 
             @Override
@@ -116,19 +118,17 @@ public class GroupFragment extends Fragment {
 
     //retrieving data (available groups list) from Firebase database
     private void showGroups(final String search) {
-        //clearing old list before showing the new one
-        groupList.clear();
 
         firestore.collection("universities").document(university).collection("departments")
-                .document("ComputerScience").collection("groups")
+                .document(department).collection("groups")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        groupList.clear();
+
                         if (task.isSuccessful()) {
-
                             for (QueryDocumentSnapshot document : task.getResult()) {
-
                                 if (search.equals("")) {
                                     groupList.add(document.getId());
 

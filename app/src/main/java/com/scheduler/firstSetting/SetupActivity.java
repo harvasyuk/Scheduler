@@ -21,7 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-public class FirstSettingActivity extends AppCompatActivity implements UniversityFragment.SendUniversityName  {
+public class SetupActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private TextView headerText;
@@ -31,7 +31,7 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_setting);
+        setContentView(R.layout.activity_setup);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -41,6 +41,7 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -66,8 +67,11 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
             public void onClick(View v) {
                 if (mViewPager.getCurrentItem() == 0) {
                     mViewPager.setCurrentItem(1);
+
+                } else if (mViewPager.getCurrentItem() == 1) {
+                    mViewPager.setCurrentItem(2);
                 } else {
-                    Intent intent = new Intent(FirstSettingActivity.this, MainActivity.class);
+                    Intent intent = new Intent(SetupActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                     TimeManager time = new TimeManager(getApplication());
@@ -86,29 +90,21 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) {
-                    headerText.setText(R.string.choose_university);
-                    backButton.setVisibility(View.GONE);
-
-                } else {
-                    headerText.setText(R.string.choose_group);
-                    backButton.setVisibility(View.VISIBLE);
+                switch (position) {
+                    case 0:
+                        headerText.setText(R.string.choose_university);
+                        backButton.setVisibility(View.GONE);
+                    case 1:
+                        headerText.setText(R.string.choose_department);
+                        backButton.setVisibility(View.VISIBLE);
+                    case 2:
+                        headerText.setText(R.string.choose_group);
                 }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-    }
-
-
-    @Override
-    public void sendData(String universityName) {
-        String tag = "android:switcher:" + R.id.container + ":" + 1;
-        GroupFragment groupFragment = (GroupFragment) getSupportFragmentManager().findFragmentByTag(tag);
-        assert groupFragment != null;
-        groupFragment.setGroupKey(universityName);
-        groupFragment.updateReference();
     }
 
 
@@ -120,16 +116,21 @@ public class FirstSettingActivity extends AppCompatActivity implements Universit
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                return new UniversityFragment();
-            } else {
-                return new GroupFragment();
+            switch (position) {
+                case 0:
+                    return new UniversityFragment();
+                case 1:
+                    return new DepartmentFragment();
+                case 2:
+                    return new GroupFragment();
+                default:
+                    return new UniversityFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }

@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ChooseDatabaseActivity extends AppCompatActivity {
+public class MatrixActivity extends AppCompatActivity {
 
     private static final String LOCAL_DATABASE = "local";
     private static final String REMOTE_DATABASE = "remote";
@@ -39,7 +39,7 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_setting);
+        setContentView(R.layout.activity_matrix);
 
         searchSchedule = findViewById(R.id.search_schedule_button);
         createSchedule = findViewById(R.id.create_schedule_button);
@@ -74,7 +74,7 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
                 schedule.downloadData();
 
                 putToSharedPref(LOCAL_DATABASE);
-                startActivity(new Intent(ChooseDatabaseActivity.this, MainActivity.class));
+                startActivity(new Intent(MatrixActivity.this, MainActivity.class));
                 finish();
             }
         });
@@ -118,7 +118,7 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 putToSharedPref(REMOTE_DATABASE);
-                startActivity(new Intent(ChooseDatabaseActivity.this, FirstSettingActivity.class));
+                startActivity(new Intent(MatrixActivity.this, SetupActivity.class));
                 finish();
             }
         });
@@ -127,7 +127,7 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 putToSharedPref(LOCAL_DATABASE);
-                startActivity(new Intent(ChooseDatabaseActivity.this, ScheduleEditorStartActivity.class));
+                startActivity(new Intent(MatrixActivity.this, ScheduleEditorStartActivity.class));
                 finish();
             }
         });
@@ -135,7 +135,7 @@ public class ChooseDatabaseActivity extends AppCompatActivity {
 
 
     private void putToSharedPref(String type) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ChooseDatabaseActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MatrixActivity.this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("databaseType", type);
         editor.apply();

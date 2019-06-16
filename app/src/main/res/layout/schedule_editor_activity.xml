@@ -36,7 +36,7 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintWidth_percent="0.7" />
+            app:layout_constraintWidth_percent="0.66" />
 
         <Button
             android:id="@+id/save_items"
@@ -47,7 +47,7 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="0.3" />
+            app:layout_constraintWidth_percent="0.34" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

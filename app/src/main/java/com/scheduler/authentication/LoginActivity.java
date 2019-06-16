@@ -23,7 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.scheduler.R;
-import com.scheduler.firstSetting.ChooseDatabaseActivity;
+import com.scheduler.firstSetting.MatrixActivity;
 import com.scheduler.logic.Utils;
 
 import androidx.annotation.NonNull;
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, saveItems UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            startActivity(new Intent(LoginActivity.this, ChooseDatabaseActivity.class));
+                            startActivity(new Intent(LoginActivity.this, MatrixActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.

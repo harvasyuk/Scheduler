@@ -45,6 +45,7 @@
     <string name="go_back">Go back</string>
     <string name="choose_university">Choose university</string>
     <string name="choose_group">Choose group</string>
+    <string name="choose_department">Choose department</string>
 
     <!-- Strings related to ScheduleSettings activity-->
     <string name="empty_fields">Fields cannot be empty</string>

@@ -52,4 +52,5 @@
     <string name="auth_failed">Помилка аутентифікації.</string>
     <string name="menu_refresh">Оновити</string>
     <string name="start_field_empty">Спочатку вкажіть час початку уроку</string>
+    <string name="choose_department">Виберіть факультет</string>
 </resources>

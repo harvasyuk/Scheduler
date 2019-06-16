@@ -63,9 +63,9 @@ public class ScheduleManager {
         account = new UserAccount(application);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
         databaseType = sharedPreferences.getString("databaseType", LOCAL_DATABASE);
-        UNIVERSITY = sharedPreferences.getString("university", "chnu");
-        DEPARTMENT = sharedPreferences.getString("department", "ComputerScience");
-        GROUP = sharedPreferences.getString("group", "542");
+        UNIVERSITY = sharedPreferences.getString("universityName", "chnu");
+        DEPARTMENT = sharedPreferences.getString("departmentName", "ComputerScience");
+        GROUP = sharedPreferences.getString("groupName", "542");
         scheduleRepository = new ScheduleRepository(application);
         setupDatabase();
     }

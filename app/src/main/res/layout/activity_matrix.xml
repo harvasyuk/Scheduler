@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scheduler.firstSetting.ChooseDatabaseActivity">
+    tools:context="com.scheduler.firstSetting.MatrixActivity">
 
     <TextView
         android:id="@+id/greeting_text"
