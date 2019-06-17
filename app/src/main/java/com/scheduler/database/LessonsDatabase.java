@@ -2,12 +2,12 @@ package com.scheduler.database;
 
 import android.content.Context;
 
-import com.scheduler.Lesson;
-import com.scheduler.LessonTime;
-
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+
+import com.scheduler.Lesson;
+import com.scheduler.LessonTime;
 
 @Database(entities = {Lesson.class, LessonTime.class}, version = 1, exportSchema = false)
 public abstract class LessonsDatabase extends RoomDatabase {

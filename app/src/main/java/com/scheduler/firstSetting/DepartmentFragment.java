@@ -1,8 +1,8 @@
 package com.scheduler.firstSetting;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -99,9 +99,10 @@ public class DepartmentFragment extends Fragment {
                 String department = departmentList.get(position);
                 model.selectDepartment(department);
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("departmentName", departmentList.get(position));
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                        getString(R.string.common_preferences), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.department_name), departmentList.get(position));
                 editor.apply();
             }
         });

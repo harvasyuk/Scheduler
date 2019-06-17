@@ -7,10 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+
 import com.scheduler.Lesson;
 import com.scheduler.R;
-
-import androidx.annotation.NonNull;
 
 public class LessonDialog extends Dialog implements View.OnClickListener {
 

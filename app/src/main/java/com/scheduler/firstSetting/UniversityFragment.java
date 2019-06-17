@@ -3,7 +3,6 @@ package com.scheduler.firstSetting;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,27 +14,21 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.scheduler.R;
-import com.scheduler.logic.TimeManager;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
@@ -103,9 +96,10 @@ public class UniversityFragment extends Fragment {
                 String university = universitiesKeyList.get(position);
                 model.selectUniversity(university);
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("universityName", university);
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                        getString(R.string.common_preferences), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.university_name), university);
                 editor.apply();
             }
         });

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,8 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-
-import androidx.annotation.NonNull;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 

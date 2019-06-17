@@ -1,13 +1,17 @@
 package com.scheduler.firstSetting;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,10 +23,6 @@ import com.scheduler.R;
 import com.scheduler.UserAccount;
 import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.TimeManager;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MatrixActivity extends AppCompatActivity {
 
@@ -135,9 +135,10 @@ public class MatrixActivity extends AppCompatActivity {
 
 
     private void putToSharedPref(String type) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MatrixActivity.this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("databaseType", type);
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                getString(R.string.common_preferences), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.database_type), type);
         editor.apply();
     }
 }

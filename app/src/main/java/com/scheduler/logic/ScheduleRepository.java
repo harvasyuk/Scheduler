@@ -3,14 +3,14 @@ package com.scheduler.logic;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
 import com.scheduler.Lesson;
 import com.scheduler.database.LessonDao;
 import com.scheduler.database.LessonsDatabase;
 
 import java.util.Calendar;
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
 
 class ScheduleRepository {
 

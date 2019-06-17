@@ -1,13 +1,14 @@
 package com.scheduler.logic;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.content.res.Resources;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.scheduler.Lesson;
+import com.scheduler.R;
 import com.scheduler.UserAccount;
 
 import java.util.Calendar;
@@ -25,8 +27,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import androidx.annotation.NonNull;
-
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 
@@ -36,7 +36,6 @@ public class ScheduleManager {
     private static final String DATA = "data";
     private static final String SCHEDULE = "schedule";
     private static final String UPDATED = "updated";
-
     private static final String UNIVERSITIES = "universities";
     private static final String DEPARTMENTS = "departments";
     private static final String GROUPS = "groups";
@@ -51,7 +50,7 @@ public class ScheduleManager {
     private String databaseType;
     private FirebaseFirestore firestore;
     private DocumentReference docRef;
-    private SharedPreferences sharedPreferences;
+    SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
     private UserAccount account;
@@ -61,11 +60,11 @@ public class ScheduleManager {
 
     public ScheduleManager(Application application) {
         account = new UserAccount(application);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
-        databaseType = sharedPreferences.getString("databaseType", LOCAL_DATABASE);
-        UNIVERSITY = sharedPreferences.getString("universityName", "chnu");
-        DEPARTMENT = sharedPreferences.getString("departmentName", "ComputerScience");
-        GROUP = sharedPreferences.getString("groupName", "542");
+        sharedPref = application.getSharedPreferences("commonPrefs", Context.MODE_PRIVATE);
+        databaseType = sharedPref.getString(application.getResources().getResourceName(R.string.database_type), LOCAL_DATABASE);
+        UNIVERSITY = sharedPref.getString(application.getResources().getResourceName(R.string.university_name), "chnu");
+        DEPARTMENT = sharedPref.getString(application.getResources().getResourceName(R.string.department_name), "ComputerScience");
+        GROUP = sharedPref.getString(application.getResources().getResourceName(R.string.group_name), "542");
         scheduleRepository = new ScheduleRepository(application);
         setupDatabase();
     }
@@ -98,7 +97,7 @@ public class ScheduleManager {
                                 @Nullable FirebaseFirestoreException e) {
                 if (document != null && document.exists()) {
                     Log.d(TAG, "Current data: " + document.getData());
-                    editor = sharedPreferences.edit();
+                    editor = sharedPref.edit();
                     editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
                     editor.apply();
                 } else {
@@ -140,18 +139,8 @@ public class ScheduleManager {
         parseLessons(lessons);
 
         docRef.set(schedule)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firestore: ", "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Firestore: ", "Error writing document", e);
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d("Firestore: ", "DocumentSnapshot successfully written!"))
+                .addOnFailureListener(e -> Log.w("Firestore: ", "Error writing document", e));
     }
 
 
@@ -164,8 +153,8 @@ public class ScheduleManager {
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
             lessonString = new StringBuilder().
-                    append(Integer.toString(lesson.getId())).append("/").
-                    append(Integer.toString(lesson.getDayOfWeek())).append("/").
+                    append(lesson.getId()).append("/").
+                    append(lesson.getDayOfWeek()).append("/").
                     append(lesson.getLessonNumber()).append("/").
                     append(lesson.getSubjectName()).append("/").
                     append(lesson.getTeacherName()).append("/").

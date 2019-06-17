@@ -2,13 +2,13 @@ package com.scheduler.logic;
 
 import android.app.Application;
 
-import com.scheduler.Lesson;
-
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+
+import com.scheduler.Lesson;
+
+import java.util.List;
 
 public class ScheduleViewModel extends AndroidViewModel {
 

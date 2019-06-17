@@ -3,13 +3,13 @@ package com.scheduler.logic;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
 import com.scheduler.LessonTime;
 import com.scheduler.database.LessonsDatabase;
 import com.scheduler.database.TimeDao;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
 
 class TimeRepository {
 

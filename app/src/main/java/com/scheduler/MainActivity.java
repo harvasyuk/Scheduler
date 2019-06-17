@@ -1,12 +1,21 @@
 package com.scheduler;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,16 +30,9 @@ import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.ScheduleViewModel;
 import com.scheduler.settings.SettingsActivity;
 
-import java.util.Calendar;
+import org.jetbrains.annotations.NotNull;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.ViewPager;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements LessonDialog.LessonDialogListener {
 
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         refreshLayout = findViewById(R.id.refresh);
-        //TextView groupName = findViewById(R.id.group_name);
+        TextView groupName = findViewById(R.id.group_name);
         TextView weekNumber = findViewById(R.id.week_number);
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager mViewPager = findViewById(R.id.container);
@@ -60,11 +62,14 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         mViewPager.setCurrentItem(currentDay());
         mViewPager.setOffscreenPageLimit(5);
 
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                getString(R.string.common_preferences), Context.MODE_PRIVATE);
+
         //custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //groupName.setText(sharedPreferences.getString("groupListPreference", ""));
+        groupName.setText(sharedPref.getString(getString(R.string.group_name), "Group 1"));
         weekNumber.setText(R.string.week);
 
         tabLayout.setupWithViewPager(mViewPager);
@@ -74,28 +79,21 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-//        MenuItem refresh = menu.findItem(R.id.menu_refresh);
-//        if (databaseType.equals(REMOTE_DATABASE)) {
-//            refresh.setVisible(false);
-//        }
         return true;
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
         switch (item.getItemId()) {
             case R.id.menu_refresh:
                 refreshLayout.setRefreshing(true);
                 updateSchedule();
                 return true;
-        }
-        if (id == R.id.action_settings) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            this.startActivity(i);
-            return true;
+            case R.id.action_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                this.startActivity(i);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -123,12 +121,13 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
     }
 
 
-    class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
+        @NotNull
         @Override
         public Fragment getItem(int position) {
             switch (position) {
@@ -143,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
                 case 4:
                     return new Friday();
             }
-            return null;
+            return new Monday();
         }
 
 

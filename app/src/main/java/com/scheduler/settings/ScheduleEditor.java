@@ -7,6 +7,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TimePicker;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.scheduler.LessonTime;
 import com.scheduler.R;
 import com.scheduler.SimpleDividerItemDecoration;
@@ -18,11 +23,6 @@ import com.scheduler.logic.Utils;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 
 public class ScheduleEditor extends AppCompatActivity {

@@ -69,5 +69,13 @@
     <string name="menu_refresh">Refresh</string>
     <string name="group_question_text">It\'s time to choose</string>
 
+    <!--Shared preferences-->
+    <string name="common_preferences" translatable="false">commonPrefs</string>
+    <string name="database_type" translatable="false">databaseType</string>
+    <string name="university_name" translatable="false">universityName</string>
+    <string name="department_name" translatable="false">departmentName</string>
+    <string name="group_name" translatable="false">groupName</string>
+
+
 
 </resources>

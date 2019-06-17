@@ -9,10 +9,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.scheduler.MainActivity;
-import com.scheduler.R;
-import com.scheduler.logic.TimeManager;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,6 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.scheduler.MainActivity;
+import com.scheduler.R;
+import com.scheduler.logic.ScheduleManager;
+import com.scheduler.logic.TimeManager;
 
 public class SetupActivity extends AppCompatActivity {
 
@@ -71,6 +72,9 @@ public class SetupActivity extends AppCompatActivity {
                 } else if (mViewPager.getCurrentItem() == 1) {
                     mViewPager.setCurrentItem(2);
                 } else {
+                    ScheduleManager schedule = new ScheduleManager(getApplication());
+                    schedule.downloadData();
+
                     Intent intent = new Intent(SetupActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
