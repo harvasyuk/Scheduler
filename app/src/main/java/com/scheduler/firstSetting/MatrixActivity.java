@@ -114,22 +114,16 @@ public class MatrixActivity extends AppCompatActivity {
             });
         } catch (Exception ignored) { }
 
-        searchSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                putToSharedPref(REMOTE_DATABASE);
-                startActivity(new Intent(MatrixActivity.this, SetupActivity.class));
-                finish();
-            }
+        searchSchedule.setOnClickListener(v -> {
+            putToSharedPref(REMOTE_DATABASE);
+            startActivity(new Intent(MatrixActivity.this, SetupActivity.class));
+            finish();
         });
 
-        createSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                putToSharedPref(LOCAL_DATABASE);
-                startActivity(new Intent(MatrixActivity.this, ScheduleEditorStartActivity.class));
-                finish();
-            }
+        createSchedule.setOnClickListener(v -> {
+            putToSharedPref(LOCAL_DATABASE);
+            startActivity(new Intent(MatrixActivity.this, ScheduleEditorStartActivity.class));
+            finish();
         });
     }
 

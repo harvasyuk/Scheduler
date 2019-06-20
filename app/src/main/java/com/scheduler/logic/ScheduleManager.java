@@ -50,7 +50,7 @@ public class ScheduleManager {
     private String databaseType;
     private FirebaseFirestore firestore;
     private DocumentReference docRef;
-    SharedPreferences sharedPref;
+    private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
     private UserAccount account;
@@ -60,11 +60,11 @@ public class ScheduleManager {
 
     public ScheduleManager(Application application) {
         account = new UserAccount(application);
-        sharedPref = application.getSharedPreferences("commonPrefs", Context.MODE_PRIVATE);
-        databaseType = sharedPref.getString(application.getResources().getResourceName(R.string.database_type), LOCAL_DATABASE);
-        UNIVERSITY = sharedPref.getString(application.getResources().getResourceName(R.string.university_name), "chnu");
-        DEPARTMENT = sharedPref.getString(application.getResources().getResourceName(R.string.department_name), "ComputerScience");
-        GROUP = sharedPref.getString(application.getResources().getResourceName(R.string.group_name), "542");
+        sharedPref = application.getSharedPreferences(application.getString(R.string.common_preferences), Context.MODE_PRIVATE);
+        databaseType = sharedPref.getString(application.getString(R.string.database_type), LOCAL_DATABASE);
+        UNIVERSITY = sharedPref.getString(application.getString(R.string.university_name), "chnu");
+        DEPARTMENT = sharedPref.getString(application.getString(R.string.department_name), "ComputerScience");
+        GROUP = sharedPref.getString(application.getString(R.string.group_name), "142");
         scheduleRepository = new ScheduleRepository(application);
         setupDatabase();
     }

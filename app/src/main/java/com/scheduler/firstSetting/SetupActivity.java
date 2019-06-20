@@ -22,6 +22,8 @@ import com.scheduler.R;
 import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.TimeManager;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SetupActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
@@ -56,35 +58,27 @@ public class SetupActivity extends AppCompatActivity {
 
         backButton.setVisibility(View.GONE);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewPager.setCurrentItem(0);
-            }
-        });
+        backButton.setOnClickListener(v -> mViewPager.setCurrentItem(0));
 
-        forwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mViewPager.getCurrentItem() == 0) {
-                    mViewPager.setCurrentItem(1);
+        forwardButton.setOnClickListener(v -> {
+            if (mViewPager.getCurrentItem() == 0) {
+                mViewPager.setCurrentItem(1);
 
-                } else if (mViewPager.getCurrentItem() == 1) {
-                    mViewPager.setCurrentItem(2);
-                } else {
-                    ScheduleManager schedule = new ScheduleManager(getApplication());
-                    schedule.downloadData();
+            } else if (mViewPager.getCurrentItem() == 1) {
+                mViewPager.setCurrentItem(2);
+            } else {
+                ScheduleManager schedule = new ScheduleManager(getApplication());
+                schedule.downloadData();
 
-                    Intent intent = new Intent(SetupActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent intent = new Intent(SetupActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-                    TimeManager time = new TimeManager(getApplication());
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    time.downloadData(prefs.getString("universityName", "chnu"));
+                TimeManager time = new TimeManager(getApplication());
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                time.downloadData(prefs.getString("universityName", "chnu"));
 
-                    startActivity(intent);
-                    finish();
-                }
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -98,11 +92,14 @@ public class SetupActivity extends AppCompatActivity {
                     case 0:
                         headerText.setText(R.string.choose_university);
                         backButton.setVisibility(View.GONE);
+                        break;
                     case 1:
                         headerText.setText(R.string.choose_department);
                         backButton.setVisibility(View.VISIBLE);
+                        break;
                     case 2:
                         headerText.setText(R.string.choose_group);
+                        break;
                 }
             }
 
@@ -115,9 +112,10 @@ public class SetupActivity extends AppCompatActivity {
     class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
+        @NotNull
         @Override
         public Fragment getItem(int position) {
             switch (position) {
