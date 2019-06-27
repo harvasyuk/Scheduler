@@ -7,11 +7,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,8 +33,14 @@ public class MatrixActivity extends AppCompatActivity {
 
     private Button searchSchedule;
     private Button createSchedule;
+    private Button loadButton;
     private TextView greetingTextView;
+    private TextView searchTextView;
+    private ProgressBar progressBar;
+    private ConstraintLayout scheduleLayout;
     private String greetingText;
+
+
 
     private UserAccount account;
 
@@ -44,6 +52,10 @@ public class MatrixActivity extends AppCompatActivity {
         searchSchedule = findViewById(R.id.search_schedule_button);
         createSchedule = findViewById(R.id.create_schedule_button);
         greetingTextView = findViewById(R.id.greeting_text);
+        progressBar = findViewById(R.id.progressBar);
+        searchTextView = findViewById(R.id.searchTextView);
+        scheduleLayout = findViewById(R.id.scheduleLayout);
+        loadButton = findViewById(R.id.loadButton);
 
         greetingText = greetingTextView.getText().toString();
 
@@ -61,33 +73,21 @@ public class MatrixActivity extends AppCompatActivity {
     }
 
 
-    private void showAlert() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Do you want to load existing schedule?");
+    private void showLayout() {
+        progressBar.setVisibility(View.GONE);
+        searchTextView.setVisibility(View.GONE);
+        scheduleLayout.setVisibility(View.VISIBLE);
 
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        loadButton.setOnClickListener(v -> {
+            TimeManager timeManager = new TimeManager(getApplication());
+            timeManager.downloadData();
+            ScheduleManager schedule = new ScheduleManager(getApplication());
+            schedule.downloadData();
 
-            public void onClick(DialogInterface dialog, int id) {
-                TimeManager timeManager = new TimeManager(getApplication());
-                timeManager.downloadData();
-                ScheduleManager schedule = new ScheduleManager(getApplication());
-                schedule.downloadData();
-
-                putToSharedPref(LOCAL_DATABASE);
-                startActivity(new Intent(MatrixActivity.this, MainActivity.class));
-                finish();
-            }
+            putToSharedPref(LOCAL_DATABASE);
+            startActivity(new Intent(MatrixActivity.this, MainActivity.class));
+            finish();
         });
-
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
 
@@ -108,7 +108,7 @@ public class MatrixActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     DocumentSnapshot document = task.getResult();
                     if (document != null) {
-                        showAlert();
+                        showLayout();
                     }
                 }
             });

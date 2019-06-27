@@ -36,6 +36,8 @@
 
     <!-- ChooseSettings activity -->
     <string name="greeting_text">"Hi, "</string>
+    <string name="search_schedule_text">Searching for existing schedule…</string>
+    <string name="load_existing_shedule">You already created schedule. Do you want to load it?</string>
     <string name="create_own_schedule">Create your own</string>
     <string name="search_group_in_db">Search in database</string>
 

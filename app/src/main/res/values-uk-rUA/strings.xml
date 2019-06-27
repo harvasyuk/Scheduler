@@ -53,4 +53,6 @@
     <string name="menu_refresh">Оновити</string>
     <string name="start_field_empty">Спочатку вкажіть час початку уроку</string>
     <string name="choose_department">Виберіть факультет</string>
+    <string name="search_schedule_text">Пошук існуючого розкладу…</string>
+    <string name="load_existing_shedule">Хочете завантажити ваш існуючий розклад?</string>
 </resources>
