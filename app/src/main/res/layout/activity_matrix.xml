@@ -113,6 +113,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/white_background"
         android:elevation="12dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/question_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
