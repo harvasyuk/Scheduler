@@ -70,7 +70,13 @@ class ScheduleRepository {
 
         @Override
         protected Void doInBackground(Lesson... lessons) {
-            lessonDao.insertLesson(lessons[0]);
+            try {
+                lessonDao.insertLesson(lessons[0]);
+            } catch (Exception e) {
+                lessonDao.deleteAllLessons();
+                lessonDao.insertLesson(lessons[0]);
+            }
+
             return null;
         }
     }

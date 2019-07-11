@@ -37,8 +37,10 @@
     <!-- ChooseSettings activity -->
     <string name="greeting_text">"Hi, "</string>
     <string name="search_schedule_text">Searching for existing schedule…</string>
-    <string name="load_existing_shedule">You already created schedule. Do you want to load it?</string>
-    <string name="create_own_schedule">Create your own</string>
+    <string name="no_schedule_text">No saved schedule</string>
+    <string name="load_existing_button">Load</string>
+    <string name="load_existing_schedule">You can load your previous schedule</string>
+    <string name="create_own_schedule">Create new</string>
     <string name="search_group_in_db">Search in database</string>
 
     <!-- Strings related to FirstSetting activity-->
@@ -77,7 +79,7 @@
     <string name="university_name" translatable="false">universityName</string>
     <string name="department_name" translatable="false">departmentName</string>
     <string name="group_name" translatable="false">groupName</string>
-
+    <string name="setup_stage" translatable="false">setupStage</string>
 
 
 </resources>

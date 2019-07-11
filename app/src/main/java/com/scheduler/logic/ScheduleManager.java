@@ -3,18 +3,11 @@ package com.scheduler.logic;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.scheduler.Lesson;
 import com.scheduler.R;
 import com.scheduler.UserAccount;
@@ -25,17 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
-
 
 public class ScheduleManager {
 
     private static final String USERS = "users";
     private static final String DATA = "data";
     private static final String SCHEDULE = "schedule";
-    private static final String UPDATED = "updated";
+    //private static final String UPDATED = "updated";
     private static final String UNIVERSITIES = "universities";
     private static final String DEPARTMENTS = "departments";
     private static final String GROUPS = "groups";
@@ -48,10 +37,8 @@ public class ScheduleManager {
     private static final String REMOTE_DATABASE = "remote";
 
     private String databaseType;
-    private FirebaseFirestore firestore;
     private DocumentReference docRef;
-    private SharedPreferences sharedPref;
-    private SharedPreferences.Editor editor;
+    //private SharedPreferences.Editor editor;
 
     private UserAccount account;
     private Map<String, Object> schedule;
@@ -60,7 +47,7 @@ public class ScheduleManager {
 
     public ScheduleManager(Application application) {
         account = new UserAccount(application);
-        sharedPref = application.getSharedPreferences(application.getString(R.string.common_preferences), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = application.getSharedPreferences(application.getString(R.string.common_preferences), Context.MODE_PRIVATE);
         databaseType = sharedPref.getString(application.getString(R.string.database_type), LOCAL_DATABASE);
         UNIVERSITY = sharedPref.getString(application.getString(R.string.university_name), "chnu");
         DEPARTMENT = sharedPref.getString(application.getString(R.string.department_name), "ComputerScience");
@@ -71,7 +58,7 @@ public class ScheduleManager {
 
 
     private void setupDatabase() {
-        firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         switch (databaseType) {
 
@@ -86,30 +73,14 @@ public class ScheduleManager {
         }
     }
 
-
-    public void checkUpdates() {
-        docRef = firestore.collection(USERS).document(account.getPersonEmail()).
-                collection(DATA).document(UPDATED);
-
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot document,
-                                @Nullable FirebaseFirestoreException e) {
-                if (document != null && document.exists()) {
-                    Log.d(TAG, "Current data: " + document.getData());
-                    editor = sharedPref.edit();
-                    editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
-                    editor.apply();
-                } else {
-                    Log.d(TAG, "Current data: null");
-                }
-            }
-        });
-    }
+    public void deleteAllLessons() { scheduleRepository.deleteAll(); }
 
 
-    public void insertEmptyLesson() {
-        String lessonNumber = String.valueOf(scheduleRepository.getLessonCountDay() + 1);
+    public void insertEmptyLesson(int timeCount) {
+        int lessonCount = scheduleRepository.getLessonCountDay() + 1;
+        if (lessonCount > timeCount) return;
+
+        String lessonNumber = String.valueOf(lessonCount);
         int count = scheduleRepository.getLessonCount();
 
         for (int i = Calendar.MONDAY; i <= Calendar.FRIDAY; i++) {
@@ -120,16 +91,13 @@ public class ScheduleManager {
 
 
     public void downloadData() {
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null) {
-                    schedule = task.getResult().getData();
-                    setLocalDatabase();
-                } else {
-                    Log.d("Firestore error", "cannot get snapshot");
-                }
+        docRef.get().addOnCompleteListener(task -> {
+            DocumentSnapshot document = task.getResult();
+            if (document != null) {
+                schedule = task.getResult().getData();
+                setLocalDatabase();
+            } else {
+                Log.d("Firestore error", "cannot get snapshot");
             }
         });
     }

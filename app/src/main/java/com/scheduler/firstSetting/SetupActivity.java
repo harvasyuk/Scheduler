@@ -1,5 +1,6 @@
 package com.scheduler.firstSetting;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -30,12 +30,15 @@ public class SetupActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TextView headerText;
     private Button backButton;
+    private SharedPreferences sharedPref;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
+
+        sharedPref = this.getSharedPreferences(getString(R.string.common_preferences), Context.MODE_PRIVATE);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,6 +81,7 @@ public class SetupActivity extends AppCompatActivity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 time.downloadData(prefs.getString("universityName", "chnu"));
 
+                activityDone();
                 startActivity(intent);
                 finish();
             }
@@ -135,5 +139,11 @@ public class SetupActivity extends AppCompatActivity {
         public int getCount() {
             return 3;
         }
+    }
+
+    private void activityDone() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.setup_stage), 2);
+        editor.apply();
     }
 }

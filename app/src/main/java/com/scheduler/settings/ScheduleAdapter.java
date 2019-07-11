@@ -1,11 +1,8 @@
 package com.scheduler.settings;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,17 +19,12 @@ import java.util.List;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder>{
 
-    private int lastPosition = -1;
-
-    private Context context;
     private boolean addingItem = false;
     private List<LessonTime> timeList = new ArrayList<>();
     private OnItemClick onItemClick;
 
 
-    ScheduleAdapter(Context context) {
-        this.context = context;
-    }
+    ScheduleAdapter() { }
 
 
     public interface OnItemClick {
@@ -62,8 +54,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     LessonTime getLessonTime(int position) {
         return timeList.get(position);
     }
-
-    List<LessonTime> getLessons() { return timeList; }
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -106,26 +96,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             viewHolder.lessonNumber.setText(String.valueOf(viewHolder.getAdapterPosition() + 1));
         }
 
-            viewHolder.startLessonText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClick.getPosition(position, 's', viewHolder.startLessonText.getText().toString());
-                }
-            });
+        viewHolder.startLessonText.setOnClickListener(v ->
+                onItemClick.getPosition(position, 's', viewHolder.startLessonText.getText().toString()));
 
-            viewHolder.endLessonText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClick.getPosition(position, 'e', viewHolder.endLessonText.getText().toString());
-                }
-            });
+        viewHolder.endLessonText.setOnClickListener(v ->
+                onItemClick.getPosition(position, 'e', viewHolder.endLessonText.getText().toString()));
 
-        // If the item wasn't previously displayed on screen, it's animated
-        if (viewHolder.getAdapterPosition() > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.item_animation_fall_down);
-            viewHolder.itemView.startAnimation(animation);
-            lastPosition = viewHolder.getAdapterPosition();
-        }
+//        // If the item wasn't previously displayed on screen, it's animated
+//        if (viewHolder.getAdapterPosition() > lastPosition) {
+//            Animation animation = AnimationUtils.loadAnimation(context, R.anim.item_animation_fall_down);
+//            viewHolder.itemView.startAnimation(animation);
+//            lastPosition = viewHolder.getAdapterPosition();
+//        }
     }
 
 

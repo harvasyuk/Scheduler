@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,24 +37,28 @@ public class MatrixActivity extends AppCompatActivity {
     private Button loadButton;
     private TextView greetingTextView;
     private TextView searchTextView;
+    private TextView dateTextView;
     private ProgressBar progressBar;
     private ConstraintLayout scheduleLayout;
     private String greetingText;
-
-
-
+    private SharedPreferences sharedPref;
     private UserAccount account;
+    TimeManager timeManager;
+    ScheduleManager schedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matrix);
 
+        sharedPref = this.getSharedPreferences(getString(R.string.common_preferences), Context.MODE_PRIVATE);
+
         searchSchedule = findViewById(R.id.search_schedule_button);
         createSchedule = findViewById(R.id.create_schedule_button);
         greetingTextView = findViewById(R.id.greeting_text);
         progressBar = findViewById(R.id.progressBar);
         searchTextView = findViewById(R.id.searchTextView);
+        dateTextView = findViewById(R.id.dateTextView);
         scheduleLayout = findViewById(R.id.scheduleLayout);
         loadButton = findViewById(R.id.loadButton);
 
@@ -61,11 +66,13 @@ public class MatrixActivity extends AppCompatActivity {
 
         account = new UserAccount(this);
         getAccountInfo();
+
+        SharedViewModel model = ViewModelProviders.of(this).get(SharedViewModel.class);
+        model.getDate().observe(this, this::setDate);
     }
 
 
     private void getAccountInfo() {
-
         if (account != null) {
             greetingText += account.getName();
             greetingTextView.setText(greetingText);
@@ -74,20 +81,30 @@ public class MatrixActivity extends AppCompatActivity {
 
 
     private void showLayout() {
+        putToSharedPref(LOCAL_DATABASE);
+
+        timeManager = new TimeManager(getApplication());
+        schedule = new ScheduleManager(getApplication());
+
         progressBar.setVisibility(View.GONE);
         searchTextView.setVisibility(View.GONE);
         scheduleLayout.setVisibility(View.VISIBLE);
 
+        timeManager.checkUpdates(this);
+
         loadButton.setOnClickListener(v -> {
-            TimeManager timeManager = new TimeManager(getApplication());
             timeManager.downloadData();
-            ScheduleManager schedule = new ScheduleManager(getApplication());
             schedule.downloadData();
 
-            putToSharedPref(LOCAL_DATABASE);
+            activityDone(2);
             startActivity(new Intent(MatrixActivity.this, MainActivity.class));
             finish();
         });
+    }
+
+
+    private void setDate(String date) {
+        dateTextView.setText(date);
     }
 
 
@@ -103,25 +120,33 @@ public class MatrixActivity extends AppCompatActivity {
             DocumentReference docRef = db.collection("users").document(account.getPersonEmail()).
                     collection("data").document("timetable");
 
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null) {
-                        showLayout();
-                    }
+            docRef.get().addOnCompleteListener(task -> {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    showLayout();
+                } else {
+                    searchTextView.setText(R.string.no_schedule_text);
+                    progressBar.setVisibility(View.GONE);
                 }
             });
         } catch (Exception ignored) { }
 
         searchSchedule.setOnClickListener(v -> {
             putToSharedPref(REMOTE_DATABASE);
+            activityDone(1);
             startActivity(new Intent(MatrixActivity.this, SetupActivity.class));
             finish();
         });
 
         createSchedule.setOnClickListener(v -> {
             putToSharedPref(LOCAL_DATABASE);
+
+            timeManager = new TimeManager(getApplication());
+            schedule = new ScheduleManager(getApplication());
+
+            activityDone(2);
+            timeManager.deleteTimes();
+            schedule.deleteAllLessons();
             startActivity(new Intent(MatrixActivity.this, ScheduleEditorStartActivity.class));
             finish();
         });
@@ -129,10 +154,15 @@ public class MatrixActivity extends AppCompatActivity {
 
 
     private void putToSharedPref(String type) {
-        SharedPreferences sharedPref = this.getSharedPreferences(
-                getString(R.string.common_preferences), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.database_type), type);
+        editor.apply();
+    }
+
+
+    private void activityDone(int stage) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.setup_stage), stage);
         editor.apply();
     }
 }

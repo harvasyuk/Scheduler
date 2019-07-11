@@ -1,6 +1,8 @@
 package com.scheduler.authentication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private final static int RC_SIGN_IN = 2;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private SharedPreferences sharedPref;
 
 
     @Override
@@ -43,14 +46,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        sharedPref = this.getSharedPreferences(getString(R.string.common_preferences), Context.MODE_PRIVATE);
+
         Button signInButton = findViewById(R.id.sign_in_button);
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
+        signInButton.setOnClickListener(v -> signIn());
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -67,12 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         final ImageView imageView = findViewById(R.id.imageView);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                animate(imageView);
-            }
-        }, 500);
+        new Handler().postDelayed(() -> animate(imageView), 500);
     }
 
 
@@ -118,22 +113,27 @@ public class LoginActivity extends AppCompatActivity {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, saveItems UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            startActivity(new Intent(LoginActivity.this, MatrixActivity.class));
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.main_layout), R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, saveItems UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        startActivity(new Intent(LoginActivity.this, MatrixActivity.class));
+                        activityDone();
+                        finish();
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Snackbar.make(findViewById(R.id.main_layout), R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
+                        //updateUI(null);
                     }
                 });
+    }
+
+
+    private void activityDone() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.setup_stage), 0);
+        editor.apply();
     }
 }
 

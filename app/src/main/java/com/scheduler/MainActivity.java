@@ -26,6 +26,8 @@ import com.scheduler.days.Monday;
 import com.scheduler.days.Thursday;
 import com.scheduler.days.Tuesday;
 import com.scheduler.days.Wednesday;
+import com.scheduler.firstSetting.MatrixActivity;
+import com.scheduler.firstSetting.SetupActivity;
 import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.ScheduleViewModel;
 import com.scheduler.settings.SettingsActivity;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
     private SwipeRefreshLayout refreshLayout;
     private ScheduleManager schedule;
+    private SharedPreferences sharedPref;
     private int day;
 
     @Override
@@ -61,9 +64,6 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         mViewPager.setAdapter(sectionsPagerAdapter);
         mViewPager.setCurrentItem(currentDay());
         mViewPager.setOffscreenPageLimit(5);
-
-        SharedPreferences sharedPref = this.getSharedPreferences(
-                getString(R.string.common_preferences), Context.MODE_PRIVATE);
 
         //custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -172,12 +172,30 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
     //go to LoginActivity if user is not signed in
     private void checkUserAuth() {
+        sharedPref = this.getSharedPreferences(
+                getString(R.string.common_preferences), Context.MODE_PRIVATE);
+
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         } else {
+            checkSetupStage();
             schedule = new ScheduleManager(getApplication());
+        }
+    }
+
+    private void checkSetupStage() {
+        int stage = sharedPref.getInt(getString(R.string.setup_stage), 0);
+        switch (stage) {
+            case 0:
+                startActivity(new Intent(MainActivity.this, MatrixActivity.class));
+                finish();
+                break;
+            case 1:
+                startActivity(new Intent(MainActivity.this, SetupActivity.class));
+                finish();
+                break;
         }
     }
 

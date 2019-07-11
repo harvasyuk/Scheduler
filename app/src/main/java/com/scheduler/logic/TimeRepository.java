@@ -6,41 +6,45 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.scheduler.LessonTime;
+import com.scheduler.database.LessonDao;
 import com.scheduler.database.LessonsDatabase;
 import com.scheduler.database.TimeDao;
 
 import java.util.List;
 
-class TimeRepository {
+public class TimeRepository {
 
     private TimeDao timeDao;
     private LiveData<List<LessonTime>> timeList;
-    private TimeManager timeManager;
+    private Application application;
 
-    TimeRepository(Application application) {
+    public TimeRepository(Application application) {
+        this.application = application;
         LessonsDatabase lessonsDatabase = LessonsDatabase.getInstance(application);
         timeDao = lessonsDatabase.timeDao();
         timeList = timeDao.getAll();
-        timeManager = new TimeManager(application);
     }
 
     LiveData<List<LessonTime>> getTimeList() { return timeList; }
+
+    int getLessonsCount() {
+        return timeDao.getLessonsCount();
+    }
 
     void insert(LessonTime lessonTime) {
         new InsertTimeAsyncTask(timeDao).execute(lessonTime);
     }
 
-    void update(LessonTime lessonTime) {
-        new UpdateTimeAsyncTask(timeDao, timeManager).execute(lessonTime);
-    }
+    void update(LessonTime lessonTime) { new UpdateTimeAsyncTask(timeDao, application).execute(lessonTime); }
 
     void delete(LessonTime lessonTime) {
-        new DeleteTimeAsyncTask(timeDao).execute(lessonTime);
+        new DeleteTimeAsyncTask(timeDao, application).execute(lessonTime);
     }
 
-//    void deleteAll() {
-//        new ScheduleRepository.DeleteAllLessonsAsyncTask(lessonDao).execute();
-//    }
+    void deleteAll() {
+        new DeleteAllTimesAsyncTask(timeDao).execute();
+    }
+
 
     private static class InsertTimeAsyncTask extends AsyncTask<LessonTime, Void, Void> {
         private TimeDao timeDao;
@@ -51,18 +55,25 @@ class TimeRepository {
 
         @Override
         protected Void doInBackground(LessonTime... lessonTimes) {
-            timeDao.insert(lessonTimes[0]);
+            try {
+                timeDao.insert(lessonTimes[0]);
+            } catch (Exception e) {
+                timeDao.deleteAll();
+                timeDao.insert(lessonTimes[0]);
+            }
+
             return null;
         }
     }
+
 
     private static class UpdateTimeAsyncTask extends AsyncTask<LessonTime, Void, Void> {
         private TimeDao timeDao;
         private TimeManager timeManager;
 
-        private UpdateTimeAsyncTask(TimeDao timeDao, TimeManager timeManager) {
+        private UpdateTimeAsyncTask(TimeDao timeDao, Application application) {
             this.timeDao = timeDao;
-            this.timeManager = timeManager;
+            timeManager = new TimeManager(application);
         }
 
         @Override
@@ -80,15 +91,33 @@ class TimeRepository {
 
     private static class DeleteTimeAsyncTask extends AsyncTask<LessonTime, Void, Void> {
         private TimeDao timeDao;
+        private TimeManager timeManager;
 
-        private DeleteTimeAsyncTask(TimeDao timeDao) {
+        private DeleteTimeAsyncTask(TimeDao timeDao, Application application) {
             this.timeDao = timeDao;
+            timeManager = new TimeManager(application);
         }
 
         @Override
         protected Void doInBackground(LessonTime... lessonTimes) {
             timeDao.delete(lessonTimes[0]);
+            timeManager.uploadData(timeDao.getAllStatic());
             return null;
         }
     }
+
+    private static class DeleteAllTimesAsyncTask extends AsyncTask<Void, Void, Void> {
+        private TimeDao timeDao;
+
+        private DeleteAllTimesAsyncTask(TimeDao timeDao) {
+            this.timeDao = timeDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            timeDao.deleteAllTimes();
+            return null;
+        }
+    }
+
 }

@@ -5,29 +5,27 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.scheduler.LessonTime;
 import com.scheduler.UserAccount;
+import com.scheduler.firstSetting.MatrixActivity;
+import com.scheduler.firstSetting.SharedViewModel;
 
 import org.joda.time.LocalTime;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
@@ -46,7 +44,6 @@ public class TimeManager {
 
     private byte[] item = {8, 0};
     private LocalTime nextStart;
-    private Application application;
 
     private Map<String, Object> timeTable;
     private List<String> timetable;
@@ -54,13 +51,17 @@ public class TimeManager {
     private int time;
     private int overallTime;
     private UserAccount account;
+    private TimeRepository repository;
 
 
     public TimeManager(Application application) {
-        this.application = application;
         account = new UserAccount(application);
         prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        repository = new TimeRepository(application);
+    }
 
+    public void deleteTimes() {
+        repository.deleteAll();
     }
 
 
@@ -74,24 +75,30 @@ public class TimeManager {
     }
 
 
-    public void checkUpdates() {
+    public void checkUpdates(MatrixActivity activity) {
         DocumentReference docRef = firestore.collection(USERS).document(account.getPersonEmail()).
                 collection(DATA).document(UPDATED);
 
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot document,
-                                @Nullable FirebaseFirestoreException e) {
-                if (document != null && document.exists()) {
-                    Log.d(TAG, "Current data: " + document.getData());
-                    editor = prefs.edit();
-                    editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
-                    editor.apply();
-                } else {
-                    Log.d(TAG, "Current data: null");
-                }
+        SharedViewModel model = ViewModelProviders.of(activity).get(SharedViewModel.class);
+
+        docRef.addSnapshotListener((document, e) -> {
+            if (document != null && document.exists()) {
+                Log.d(TAG, "Current data: " + document.getData());
+                editor = prefs.edit();
+                editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
+                editor.apply();
+
+                model.setDate(timestampToString(document.getDate("date")));
+
+            } else {
+                Log.d(TAG, "Current data: null");
             }
         });
+    }
+
+    private String timestampToString(Date timestamp) {
+        DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+        return dateFormat.format(timestamp);
     }
 
 
@@ -108,16 +115,13 @@ public class TimeManager {
 
 
     private void getFromFirestore(DocumentReference docRef) {
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null) {
-                    timetable = (List<String>) document.get("timetable");
-                    setLocalDatabase(timetable);
-                } else {
-                    Log.d("Firestore error", "cannot get snapshot");
-                }
+        docRef.get().addOnCompleteListener(task -> {
+            DocumentSnapshot document = task.getResult();
+            if (document != null) {
+                timetable = (List<String>) document.get("timetable");
+                setLocalDatabase(timetable);
+            } else {
+                Log.d("Firestore error", "cannot get snapshot");
             }
         });
     }
@@ -127,18 +131,10 @@ public class TimeManager {
         parseTime(timeList);
 
         firestore.collection(USERS).document(account.getPersonEmail()).collection(DATA)
-                .document(TIMETABLE).set(timeTable).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firestore: ", "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Firestore: ", "Error writing document", e);
-                    }
-                });
+                .document(TIMETABLE).set(timeTable).addOnSuccessListener(aVoid ->
+                        Log.d("Firestore: ", "DocumentSnapshot successfully written!"))
+                .addOnFailureListener(e ->
+                        Log.w("Firestore: ", "Error writing document", e));
     }
 
 
@@ -157,7 +153,6 @@ public class TimeManager {
 
 
     private void setLocalDatabase(List<String> timetable) {
-        TimeRepository repository = new TimeRepository(application);
         int j = -1;
 
         for (int i = 0; i < timetable.size(); i+=2) {
@@ -213,5 +208,4 @@ public class TimeManager {
         }
         return item;
     }
-
 }

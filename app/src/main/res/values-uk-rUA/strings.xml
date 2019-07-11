@@ -29,7 +29,6 @@
     <string name="sign_in_google">Увійти за допомогою Google</string>
     <string name="group_question_text">Час вибирати</string>
     <string name="greeting_text">"Привіт, "</string>
-    <string name="create_own_schedule">Створити власний розклад</string>
     <string name="search_group_in_db">Шукати в базі даних</string>
     <string name="welcome_text">Ласкаво просимо в Scheduler! Давайте налаштуємо його для вас</string>
     <string name="welcome_text2">Спочатку, увійдіть за допомогою вашого облікового запису Google</string>
@@ -54,5 +53,8 @@
     <string name="start_field_empty">Спочатку вкажіть час початку уроку</string>
     <string name="choose_department">Виберіть факультет</string>
     <string name="search_schedule_text">Пошук існуючого розкладу…</string>
-    <string name="load_existing_shedule">Хочете завантажити ваш існуючий розклад?</string>
+    <string name="load_existing_schedule">Ви можете завантажити ваш попередній розклад</string>
+    <string name="no_schedule_text">Немає збереженого розкладу</string>
+    <string name="create_own_schedule">Створити новий</string>
+    <string name="load_existing_button">Завантажити</string>
 </resources>

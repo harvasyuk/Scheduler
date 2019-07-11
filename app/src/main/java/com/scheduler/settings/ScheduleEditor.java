@@ -9,6 +9,7 @@ import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ public class ScheduleEditor extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TimeViewModel timeViewModel;
     private LessonTime lessonTime;
+    private List<LessonTime> timeList;
     private ScheduleManager scheduleManager;
     private boolean insert = false;
     public boolean upEnabled;
@@ -59,7 +61,7 @@ public class ScheduleEditor extends AppCompatActivity {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
-        scheduleAdapter = new ScheduleAdapter(this);
+        scheduleAdapter = new ScheduleAdapter();
 
         updateLiveData();
 
@@ -71,11 +73,9 @@ public class ScheduleEditor extends AppCompatActivity {
     private void updateLiveData() {
 
         timeViewModel = ViewModelProviders.of(this).get(TimeViewModel.class);
-        timeViewModel.getTimeList().observe(this, new androidx.lifecycle.Observer<List<LessonTime>>() {
-            @Override
-            public void onChanged(List<LessonTime> timeList) {
-                scheduleAdapter.updateTimeList(timeList);
-            }
+        timeViewModel.getTimeList().observe(this, timeList -> {
+            scheduleAdapter.updateTimeList(timeList);
+            this.timeList = timeList;
         });
     }
 
@@ -84,38 +84,28 @@ public class ScheduleEditor extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scheduleAdapter.addItem(true);
-                recyclerView.smoothScrollToPosition(scheduleAdapter.getItemCount() - 1);
-            }
+        addButton.setOnClickListener(v -> {
+            scheduleAdapter.addItem(true);
+            recyclerView.smoothScrollToPosition(scheduleAdapter.getItemCount() - 1);
         });
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (scheduleAdapter.getLessons().size() > 0) {
-                    TimeManager timeManager = new TimeManager(getApplication());
-                    timeManager.uploadData(scheduleAdapter.getLessons());
-                }
-                fillSchedule();
+        saveButton.setOnClickListener(v -> {
+            if (scheduleAdapter.getItemCount() > 0) {
+                TimeManager timeManager = new TimeManager(getApplication());
+                timeManager.uploadData(timeList);
             }
+            fillSchedule();
         });
 
-        scheduleAdapter.setOnItemClick(new ScheduleAdapter.OnItemClick() {
-            @Override
-            public void getPosition(int position, char state, String time) {
-
-                setTimeData(position, state);
-            }
-        });
+        scheduleAdapter.setOnItemClick((position, state, time) -> setTimeData(position, state));
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new SwipeToDeleteCallback(0, ItemTouchHelper.LEFT, this, scheduleAdapter, timeViewModel);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
     }
 
 
 
     private void setTimeData(final int position, final char state) {
-        int listSize = scheduleAdapter.getLessons().size();
+        int listSize = scheduleAdapter.getItemCount();
         String time;
         lessonTime = null;
         String oldTimeStart = null;
@@ -163,34 +153,33 @@ public class ScheduleEditor extends AppCompatActivity {
         int minute = Integer.parseInt(timeArray[1]);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minuteOfHour) {
-                        String newTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minuteOfHour);
+                (view, hourOfDay, minuteOfHour) -> {
+                    String newTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minuteOfHour);
 
-                        if (state == 's' && lessonTime.getLessonEnd() != null) {
-                            lessonTime.setLessonStart(newTime);
-                        } else if (state == 's') {
-                            lessonTime.setLessonStart(newTime);
-                            lessonTime.setLessonEnd(newTime);
-                        } else if (state == 'e') {
-                            lessonTime.setLessonEnd(newTime);
-                        }
+                    if (state == 's' && lessonTime.getLessonEnd() != null) {
+                        lessonTime.setLessonStart(newTime);
+                    } else if (state == 's') {
+                        lessonTime.setLessonStart(newTime);
+                        lessonTime.setLessonEnd(newTime);
+                    } else if (state == 'e') {
+                        lessonTime.setLessonEnd(newTime);
+                    }
 
-                        if (insert) {
-                            timeViewModel.insert(lessonTime);
-                            scheduleManager.insertEmptyLesson();
-                            insert = false;
-                            scheduleAdapter.addItem(false);
-                        } else {
-                            timeViewModel.update(lessonTime);
-                        }
+                    if (insert) {
+                        timeViewModel.insert(lessonTime);
+                        scheduleManager.insertEmptyLesson(scheduleAdapter.getItemCount());
+                        insert = false;
+                        scheduleAdapter.addItem(false);
+                    } else {
+                        timeViewModel.update(lessonTime);
                     }
                 }, hour, minute, true);
         timePickerDialog.show();
     }
 
 
-    public void fillSchedule() { }
+    public void fillSchedule() {
+        finish();
+    }
 
 }

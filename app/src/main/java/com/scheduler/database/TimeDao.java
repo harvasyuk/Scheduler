@@ -23,6 +23,9 @@ public interface TimeDao {
     @Delete
     void delete(LessonTime lessonTime);
 
+    @Query("DELETE FROM time_table")
+    void deleteAllTimes();
+
     @Query("SELECT * FROM time_table")
     LiveData<List<LessonTime>> getAll();
 
@@ -31,4 +34,7 @@ public interface TimeDao {
 
     @Query("DELETE FROM time_table")
     void deleteAll();
+
+    @Query("SELECT COUNT(id) FROM time_table")
+    int getLessonsCount();
 }
