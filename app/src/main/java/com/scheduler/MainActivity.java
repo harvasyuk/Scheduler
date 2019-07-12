@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
         refreshLayout = findViewById(R.id.refresh);
         TextView groupName = findViewById(R.id.group_name);
-        TextView weekNumber = findViewById(R.id.week_number);
+        //TextView weekNumber = findViewById(R.id.week_number);
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager mViewPager = findViewById(R.id.container);
 
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         setSupportActionBar(toolbar);
 
         groupName.setText(sharedPref.getString(getString(R.string.group_name), "Group 1"));
-        weekNumber.setText(R.string.week);
+        //weekNumber.setText(R.string.week);
 
         tabLayout.setupWithViewPager(mViewPager);
     }

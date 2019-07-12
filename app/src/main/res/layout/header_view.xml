@@ -19,15 +19,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/week_number"
+    <Button
+        android:id="@+id/button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:fontFamily="@font/product_sans_regular"
-        android:text="Week 1"
-        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-        android:textColor="@color/browser_actions_title_color"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:text="@string/week"
+        android:background="@drawable/white_button_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
