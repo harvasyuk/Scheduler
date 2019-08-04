@@ -151,4 +151,8 @@ public class ScheduleManager {
             scheduleRepository.insert(lesson);
         }
     }
+
+    public void setWeekNumber(int weekNumber) {
+
+    }
 }

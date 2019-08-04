@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MultiToggleView">
+        <attr name="toggleColor" format="color"/>
+        <attr name="backgroundToggleColor" format="color"/>
+        <attr name="labelColor" format="color"/>
+        <attr name="toggleLabel" format="string"/>
+    </declare-styleable>
+</resources>

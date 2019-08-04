@@ -48,16 +48,8 @@ public class Lesson {
         return lessonNumber;
     }
 
-    public void setLessonNumber(String lessonNumber) {
-        this.lessonNumber = lessonNumber;
-    }
-
     public int getDayOfWeek() {
         return dayOfWeek;
-    }
-
-    public void setDayOfWeek(int dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
     }
 
     public String getSubjectName() {

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
     private SharedPreferences sharedPref;
     private int day;
 
+    private MultiToggleView toggleView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         checkUserAuth();
@@ -57,8 +60,11 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         refreshLayout = findViewById(R.id.refresh);
         TextView groupName = findViewById(R.id.group_name);
         //TextView weekNumber = findViewById(R.id.week_number);
+        //Button weekButton = findViewById(R.id.weekNumberButton);
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager mViewPager = findViewById(R.id.container);
+        toggleView = findViewById(R.id.weekToggle);
+        toggleView.setToggle(1);
 
         refreshLayout.setEnabled(false);
         mViewPager.setAdapter(sectionsPagerAdapter);
@@ -73,7 +79,17 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         //weekNumber.setText(R.string.week);
 
         tabLayout.setupWithViewPager(mViewPager);
+
+        toggleView.setOnStateChangeListener(new MultiToggleView.StateChangeListener() {
+            @Override
+            public void onStateChange(int position) {
+                System.out.println(position);
+                schedule.setWeekNumber(position);
+            }
+        });
     }
+
+
 
 
     @Override
