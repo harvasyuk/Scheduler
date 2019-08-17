@@ -15,7 +15,7 @@
         android:text="@string/group"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         android:textColor="@color/browser_actions_title_color"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:toggleColor="@color/colorAccentBlue"
         app:backgroundToggleColor="@color/light_grey"
-        app:labelColor="@color/white"
+        app:labelColor="@color/background_grey"
         app:toggleLabel="Hello" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

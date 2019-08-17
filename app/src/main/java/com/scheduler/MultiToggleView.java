@@ -67,29 +67,6 @@ public class MultiToggleView extends View {
 
     public void setToggle(int position) {
         this.position = position;
-        new Thread(() -> {
-            do {
-                switch (position) {
-                    case 0:
-                        x = leftSide;
-                        break;
-                    case 1:
-                        x = middle;
-                        break;
-                    case 2:
-                        x = rightSide;
-                        break;
-                    default:
-                        x = middle;
-                }
-            } while (middle == 0);
-
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
 
@@ -103,6 +80,20 @@ public class MultiToggleView extends View {
         leftSide = parentWidth * 0.15f;
         rightSide = parentWidth * 0.85f;
         middle = parentWidth * 0.5f;
+
+        switch (position) {
+            case 0:
+                x = leftSide;
+                break;
+            case 1:
+                x = middle;
+                break;
+            case 2:
+                x = rightSide;
+                break;
+            default:
+                x = middle;
+        }
 
         viewHeightHalf = parentHeight * 0.5f;
     }
@@ -164,7 +155,6 @@ public class MultiToggleView extends View {
             case MotionEvent.ACTION_UP:
                 animator.start();
                 performClick();
-
         }
         return true;
     }

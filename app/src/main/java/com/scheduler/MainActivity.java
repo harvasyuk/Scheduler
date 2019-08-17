@@ -59,34 +59,24 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
         refreshLayout = findViewById(R.id.refresh);
         TextView groupName = findViewById(R.id.group_name);
-        //TextView weekNumber = findViewById(R.id.week_number);
-        //Button weekButton = findViewById(R.id.weekNumberButton);
         TabLayout tabLayout = findViewById(R.id.tabs);
         ViewPager mViewPager = findViewById(R.id.container);
         toggleView = findViewById(R.id.weekToggle);
-        toggleView.setToggle(1);
+        toggleView.setToggle(0);
 
         refreshLayout.setEnabled(false);
         mViewPager.setAdapter(sectionsPagerAdapter);
         mViewPager.setCurrentItem(currentDay());
         mViewPager.setOffscreenPageLimit(5);
 
-        //custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         groupName.setText(sharedPref.getString(getString(R.string.group_name), "Group 1"));
-        //weekNumber.setText(R.string.week);
 
         tabLayout.setupWithViewPager(mViewPager);
 
-        toggleView.setOnStateChangeListener(new MultiToggleView.StateChangeListener() {
-            @Override
-            public void onStateChange(int position) {
-                System.out.println(position);
-                schedule.setWeekNumber(position);
-            }
-        });
+        toggleView.setOnStateChangeListener(position -> schedule.setWeekNumber(position));
     }
 
 
