@@ -3,12 +3,12 @@ package com.scheduler;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,20 +20,29 @@ public class MultiToggleView extends View {
     private int toggleColor;
     private int backgroundColor;
     private int labelColor;
-    private String toggleText;
 
-    private Paint paint;
+    private Paint backgroundPaint;
+    private Paint togglePaint;
+    private Paint shadowPaint;
+    private Paint backgroundShadow;
+    private Paint textPaint;
+    private Path togglePath;
     private float x = 0;
     private float leftSide = 0;
     private float middle = 0;
     private float rightSide = 0;
     private float viewHeightHalf;
     private ValueAnimator animator;
-    PropertyValuesHolder propertyLeft;
-    PropertyValuesHolder propertyMiddle;
-    PropertyValuesHolder propertyRight;
     private int position;
     private StateChangeListener stateChangeListener;
+
+    private float backgroundRadius;
+    private float toggleRadius;
+    private float toggleLength;
+
+    private RectF toggleRect;
+    private RectF leftOval;
+    private RectF rightOval;
 
 
     public MultiToggleView(Context context, @Nullable AttributeSet attrs) {
@@ -41,13 +50,10 @@ public class MultiToggleView extends View {
 
         stateChangeListener = null;
 
-        paint = new Paint();
-
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.MultiToggleView, 0, 0);
 
         try {
-            toggleText = typedArray.getString(R.styleable.MultiToggleView_toggleLabel);
             toggleColor = typedArray.getInteger(R.styleable.MultiToggleView_toggleColor, 0);
             backgroundColor = typedArray.getInteger(R.styleable.MultiToggleView_backgroundToggleColor, 0);
             labelColor = typedArray.getInteger(R.styleable.MultiToggleView_labelColor, 0);
@@ -57,11 +63,44 @@ public class MultiToggleView extends View {
 
         animator = ValueAnimator.ofInt(0, 100);
         animator.setDuration(250);
-
         animator.addUpdateListener(valueAnimator -> {
             x = (float) valueAnimator.getAnimatedValue("position");
             invalidate();
         });
+
+        init();
+    }
+
+
+    private void init() {
+        togglePath = new Path();
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setStyle(Paint.Style.FILL);
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setColor(backgroundColor);
+
+        togglePaint = new Paint();
+        togglePaint.setAntiAlias(true);
+        togglePaint.setColor(toggleColor);
+
+        shadowPaint = new Paint(0);
+        shadowPaint.setColor(0xff42A5F5);
+        shadowPaint.setMaskFilter(new BlurMaskFilter(14, BlurMaskFilter.Blur.NORMAL));
+
+        backgroundShadow = new Paint(0);
+        backgroundShadow.setColor(0xff757575);
+        backgroundShadow.setMaskFilter(new BlurMaskFilter(6, BlurMaskFilter.Blur.NORMAL));
+
+
+        textPaint = new Paint();
+        textPaint.setColor(labelColor);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTypeface(getResources().getFont(R.font.product_sans_regular));
+
+        toggleRect = new RectF();
+        rightOval = new RectF();
+        leftOval = new RectF();
     }
 
 
@@ -74,12 +113,12 @@ public class MultiToggleView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        float parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        float parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+        float viewWidth = MeasureSpec.getSize(widthMeasureSpec);
+        float viewHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        leftSide = parentWidth * 0.15f;
-        rightSide = parentWidth * 0.85f;
-        middle = parentWidth * 0.5f;
+        leftSide = viewWidth * 0.25f;
+        rightSide = viewWidth * 0.75f;
+        middle = viewWidth * 0.5f;
 
         switch (position) {
             case 0:
@@ -95,47 +134,59 @@ public class MultiToggleView extends View {
                 x = middle;
         }
 
-        viewHeightHalf = parentHeight * 0.5f;
+        viewHeightHalf = viewHeight * 0.5f;
+
+        backgroundPaint.setStrokeWidth(viewWidth * 0.015f);
+        backgroundRadius = viewWidth * 0.025f;
+        toggleRadius = viewWidth * 0.06f;
+        toggleLength = viewWidth * 0.07f;
+        textPaint.setTextSize(viewWidth * 0.055f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        paint.setStyle(Paint.Style.FILL);
-        paint.setAntiAlias(true);
-        paint.setColor(backgroundColor);
+        canvas.drawLine(leftSide, viewHeightHalf, rightSide, viewHeightHalf, backgroundPaint);
 
-        paint.setStrokeWidth(10);
-        canvas.drawLine(leftSide, viewHeightHalf, rightSide, viewHeightHalf, paint);
+        canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundShadow);
+        canvas.drawCircle(leftSide, viewHeightHalf, backgroundRadius, backgroundShadow);
+        canvas.drawCircle(rightSide, viewHeightHalf, backgroundRadius, backgroundShadow);
 
-        canvas.drawCircle(middle, viewHeightHalf, 15, paint);
-        canvas.drawCircle(leftSide, viewHeightHalf, 15, paint);
-        canvas.drawCircle(rightSide, viewHeightHalf, 15, paint);
+        canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundPaint);
+        canvas.drawCircle(leftSide, viewHeightHalf, backgroundRadius, backgroundPaint);
+        canvas.drawCircle(rightSide, viewHeightHalf, backgroundRadius, backgroundPaint);
 
         if ((x - leftSide > middle - x) && (rightSide - x > x - middle)) {
-            propertyMiddle = PropertyValuesHolder.ofFloat("position", x, middle);
+            PropertyValuesHolder propertyMiddle = PropertyValuesHolder.ofFloat("position", x, middle);
             animator.setValues(propertyMiddle);
             position = 1;
 
         } else if (x - leftSide < middle - x) {
-            propertyLeft = PropertyValuesHolder.ofFloat("position", x, leftSide);
+            PropertyValuesHolder propertyLeft = PropertyValuesHolder.ofFloat("position", x, leftSide);
             animator.setValues(propertyLeft);
             position = 0;
 
         } else if (rightSide - x < x - middle) {
-            propertyRight = PropertyValuesHolder.ofFloat("position", x, rightSide);
+            PropertyValuesHolder propertyRight = PropertyValuesHolder.ofFloat("position", x, rightSide);
             animator.setValues(propertyRight);
             position = 2;
         }
 
-        paint.setColor(toggleColor);
-        canvas.drawCircle(x, viewHeightHalf, 35, paint);
+        toggleRect.set(x - toggleLength, viewHeightHalf + toggleRadius, x + toggleLength, viewHeightHalf - toggleRadius);
+        rightOval.set(x - toggleRadius + toggleLength, viewHeightHalf - toggleRadius, x + toggleRadius + toggleLength, viewHeightHalf + toggleRadius);
+        leftOval.set(x - toggleRadius - toggleLength, viewHeightHalf - toggleRadius, x + toggleRadius - toggleLength, viewHeightHalf + toggleRadius);
 
-        paint.setColor(labelColor);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(viewHeightHalf * 0.6f);
-        canvas.drawText(String.valueOf(position + 1), x, viewHeightHalf + paint.getTextSize() * 0.35f, paint);
+        togglePath.addArc(rightOval, -90, 180);
+        togglePath.addArc(leftOval, 90, 180);
+        togglePath.addRect(toggleRect, Path.Direction.CW);
+
+        canvas.drawPath(togglePath, shadowPaint);
+        canvas.drawPath(togglePath, togglePaint);
+
+        togglePath.reset();
+
+        canvas.drawText("Week " + (position + 1), x, viewHeightHalf + textPaint.getTextSize() * 0.35f, textPaint);
     }
 
 
