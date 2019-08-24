@@ -50,7 +50,7 @@ public class MultiToggleView extends View {
     private RectF leftOval;
     private RectF rightOval;
 
-    private int position;
+    private int position = 1;
     private int stateCount = 3;
 
 
@@ -97,7 +97,7 @@ public class MultiToggleView extends View {
 
         shadowPaint = new Paint(0);
         shadowPaint.setColor(0xff42A5F5);
-        shadowPaint.setMaskFilter(new BlurMaskFilter(14, BlurMaskFilter.Blur.NORMAL));
+        shadowPaint.setMaskFilter(new BlurMaskFilter(12, BlurMaskFilter.Blur.NORMAL));
 
         backgroundShadow = new Paint(0);
         backgroundShadow.setColor(0xff757575);
