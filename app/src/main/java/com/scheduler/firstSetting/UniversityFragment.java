@@ -30,8 +30,6 @@ import com.scheduler.R;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
-
 
 public class UniversityFragment extends Fragment {
 
@@ -111,27 +109,24 @@ public class UniversityFragment extends Fragment {
 
         firestore.collection("universities")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            universitiesKeyList.clear();
-                            universitiesList.clear();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        universitiesKeyList.clear();
+                        universitiesList.clear();
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (search.equals("")) {
-                                    universitiesKeyList.add(document.getId());
-                                    universitiesList.add(document.getString("name"));
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (search.equals("")) {
+                                universitiesKeyList.add(document.getId());
+                                universitiesList.add(document.getString("name"));
 
-                                } else if (document.getString("name").contains(search)) {
-                                    universitiesKeyList.add(document.getId());
-                                    universitiesList.add(document.getString("name"));
-                                }
+                            } else if (document.getString("name").contains(search)) {
+                                universitiesKeyList.add(document.getId());
+                                universitiesList.add(document.getString("name"));
                             }
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("UniversityFragment", "Error getting documents: ", task.getException());
                     }
                 });
     }

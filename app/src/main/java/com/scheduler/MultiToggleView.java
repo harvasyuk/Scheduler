@@ -28,12 +28,18 @@ public class MultiToggleView extends View {
     private Paint textPaint;
     private Path togglePath;
     private float x = 0;
+
     private float leftSide = 0;
     private float middle = 0;
     private float rightSide = 0;
+
+    private float leftPoint = 0;
+    private float rightPoint = 0;
+
     private float viewHeightHalf;
     private ValueAnimator animator;
-    private int position;
+    private PropertyValuesHolder valuesHolder;
+
     private StateChangeListener stateChangeListener;
 
     private float backgroundRadius;
@@ -43,6 +49,9 @@ public class MultiToggleView extends View {
     private RectF toggleRect;
     private RectF leftOval;
     private RectF rightOval;
+
+    private int position;
+    private int stateCount = 3;
 
 
     public MultiToggleView(Context context, @Nullable AttributeSet attrs) {
@@ -68,6 +77,8 @@ public class MultiToggleView extends View {
             invalidate();
         });
 
+        valuesHolder = PropertyValuesHolder.ofFloat("position", 0, 0);
+
         init();
     }
 
@@ -92,8 +103,8 @@ public class MultiToggleView extends View {
         backgroundShadow.setColor(0xff757575);
         backgroundShadow.setMaskFilter(new BlurMaskFilter(6, BlurMaskFilter.Blur.NORMAL));
 
-
         textPaint = new Paint();
+        textPaint.setAntiAlias(true);
         textPaint.setColor(labelColor);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(getResources().getFont(R.font.product_sans_regular));
@@ -101,6 +112,11 @@ public class MultiToggleView extends View {
         toggleRect = new RectF();
         rightOval = new RectF();
         leftOval = new RectF();
+    }
+
+
+    public void setStateCount(int stateCount) {
+        this.stateCount = stateCount;
     }
 
 
@@ -116,22 +132,35 @@ public class MultiToggleView extends View {
         float viewWidth = MeasureSpec.getSize(widthMeasureSpec);
         float viewHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        leftSide = viewWidth * 0.25f;
-        rightSide = viewWidth * 0.75f;
         middle = viewWidth * 0.5f;
 
+        if (stateCount == 2) {
+
+            leftSide = viewWidth * 0.35f;
+            rightSide = viewWidth * 0.65f;
+
+            leftPoint = middle;
+            rightPoint = middle;
+
+        } else {
+
+            leftSide = viewWidth * 0.25f;
+            rightSide = viewWidth * 0.75f;
+
+            leftPoint = (middle + leftSide) / 2f;
+            rightPoint = (middle + rightSide) / 2f;
+        }
+
         switch (position) {
-            case 0:
+            case 1:
                 x = leftSide;
                 break;
-            case 1:
+            case 2:
                 x = middle;
                 break;
-            case 2:
+            case 3:
                 x = rightSide;
                 break;
-            default:
-                x = middle;
         }
 
         viewHeightHalf = viewHeight * 0.5f;
@@ -149,28 +178,31 @@ public class MultiToggleView extends View {
 
         canvas.drawLine(leftSide, viewHeightHalf, rightSide, viewHeightHalf, backgroundPaint);
 
-        canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundShadow);
         canvas.drawCircle(leftSide, viewHeightHalf, backgroundRadius, backgroundShadow);
         canvas.drawCircle(rightSide, viewHeightHalf, backgroundRadius, backgroundShadow);
 
-        canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundPaint);
-        canvas.drawCircle(leftSide, viewHeightHalf, backgroundRadius, backgroundPaint);
+        if (stateCount > 2) {
+            canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundShadow);
+            canvas.drawCircle(middle, viewHeightHalf, backgroundRadius, backgroundPaint);
+        }
         canvas.drawCircle(rightSide, viewHeightHalf, backgroundRadius, backgroundPaint);
+        canvas.drawCircle(leftSide, viewHeightHalf, backgroundRadius, backgroundPaint);
 
-        if ((x - leftSide > middle - x) && (rightSide - x > x - middle)) {
-            PropertyValuesHolder propertyMiddle = PropertyValuesHolder.ofFloat("position", x, middle);
-            animator.setValues(propertyMiddle);
+
+        if (x > leftPoint && x < rightPoint && stateCount > 2) {
+            valuesHolder.setFloatValues(x, middle);
+            animator.setValues(valuesHolder);
+            position = 2;
+
+        } else if (x < leftPoint) {
+            valuesHolder.setFloatValues(x, leftSide);
+            animator.setValues(valuesHolder);
             position = 1;
 
-        } else if (x - leftSide < middle - x) {
-            PropertyValuesHolder propertyLeft = PropertyValuesHolder.ofFloat("position", x, leftSide);
-            animator.setValues(propertyLeft);
-            position = 0;
-
-        } else if (rightSide - x < x - middle) {
-            PropertyValuesHolder propertyRight = PropertyValuesHolder.ofFloat("position", x, rightSide);
-            animator.setValues(propertyRight);
-            position = 2;
+        } else if (x > rightPoint) {
+            valuesHolder.setFloatValues(x, rightSide);
+            animator.setValues(valuesHolder);
+            position = stateCount;
         }
 
         toggleRect.set(x - toggleLength, viewHeightHalf + toggleRadius, x + toggleLength, viewHeightHalf - toggleRadius);
@@ -186,7 +218,7 @@ public class MultiToggleView extends View {
 
         togglePath.reset();
 
-        canvas.drawText("Week " + (position + 1), x, viewHeightHalf + textPaint.getTextSize() * 0.35f, textPaint);
+        canvas.drawText("Week " + position, x, viewHeightHalf + textPaint.getTextSize() * 0.35f, textPaint);
     }
 
 

@@ -29,9 +29,6 @@ import com.scheduler.R;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
-
-
 public class GroupFragment extends Fragment {
 
     private FirebaseFirestore firestore;
@@ -99,15 +96,12 @@ public class GroupFragment extends Fragment {
         });
 
         //setting up the chosen group
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                        getString(R.string.common_preferences), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.group_name), groupList.get(position));
-                editor.apply();
-            }
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.common_preferences), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.group_name), groupList.get(position));
+            editor.apply();
         });
     }
 
@@ -134,7 +128,7 @@ public class GroupFragment extends Fragment {
                             }
                             adapter.notifyDataSetChanged();
                         } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            Log.d("GroupFragment", "Error getting documents: ", task.getException());
                         }
                     }
                 });

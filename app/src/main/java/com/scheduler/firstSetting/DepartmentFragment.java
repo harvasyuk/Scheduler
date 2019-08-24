@@ -29,8 +29,6 @@ import com.scheduler.R;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
-
 public class DepartmentFragment extends Fragment {
 
     private FirebaseFirestore firestore;
@@ -93,18 +91,15 @@ public class DepartmentFragment extends Fragment {
         });
 
         //setting up the chosen group
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String department = departmentList.get(position);
-                model.selectDepartment(department);
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            String department = departmentList.get(position);
+            model.selectDepartment(department);
 
-                SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                        getString(R.string.common_preferences), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.department_name), departmentList.get(position));
-                editor.apply();
-            }
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.common_preferences), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.department_name), departmentList.get(position));
+            editor.apply();
         });
     }
 
@@ -114,24 +109,21 @@ public class DepartmentFragment extends Fragment {
 
         firestore.collection("universities").document(university).collection("departments")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        departmentList.clear();
+                .addOnCompleteListener(task -> {
+                    departmentList.clear();
 
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (search.equals("")) {
-                                    departmentList.add(document.getId());
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (search.equals("")) {
+                                departmentList.add(document.getId());
 
-                                } else if (document.getId().contains(search)) {
-                                    departmentList.add(document.getId());
-                                }
+                            } else if (document.getId().contains(search)) {
+                                departmentList.add(document.getId());
                             }
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("DepartmentFragment", "Error getting documents: ", task.getException());
                     }
                 });
     }

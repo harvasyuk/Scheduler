@@ -1,6 +1,7 @@
 package com.scheduler.logic;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.scheduler.LessonTime;
+import com.scheduler.R;
 import com.scheduler.UserAccount;
 import com.scheduler.firstSetting.MatrixActivity;
 import com.scheduler.firstSetting.SharedViewModel;
@@ -27,7 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 public class TimeManager {
 
@@ -56,7 +57,8 @@ public class TimeManager {
 
     public TimeManager(Application application) {
         account = new UserAccount(application);
-        prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        //prefs = PreferenceManager.getDefaultSharedPreferences(application);
+        prefs = application.getSharedPreferences(application.getString(R.string.common_preferences), Context.MODE_PRIVATE);
         repository = new TimeRepository(application);
     }
 
@@ -83,7 +85,7 @@ public class TimeManager {
 
         docRef.addSnapshotListener((document, e) -> {
             if (document != null && document.exists()) {
-                Log.d(TAG, "Current data: " + document.getData());
+                Log.d("CheckUpdates", "Current data: " + document.getData());
                 editor = prefs.edit();
                 editor.putString(UPDATED, Objects.requireNonNull(document.getData()).toString());
                 editor.apply();
@@ -91,7 +93,7 @@ public class TimeManager {
                 model.setDate(timestampToString(document.getDate("date")));
 
             } else {
-                Log.d(TAG, "Current data: null");
+                Log.d("CheckUpdates", "Current data: null");
             }
         });
     }
