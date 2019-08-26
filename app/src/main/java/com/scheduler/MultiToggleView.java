@@ -96,12 +96,12 @@ public class MultiToggleView extends View {
         togglePaint.setColor(toggleColor);
 
         shadowPaint = new Paint(0);
-        shadowPaint.setColor(0xff42A5F5);
+        shadowPaint.setColor(0xff2196F3);
         shadowPaint.setMaskFilter(new BlurMaskFilter(12, BlurMaskFilter.Blur.NORMAL));
 
         backgroundShadow = new Paint(0);
         backgroundShadow.setColor(0xff757575);
-        backgroundShadow.setMaskFilter(new BlurMaskFilter(6, BlurMaskFilter.Blur.NORMAL));
+        backgroundShadow.setMaskFilter(new BlurMaskFilter(4, BlurMaskFilter.Blur.NORMAL));
 
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
@@ -156,7 +156,8 @@ public class MultiToggleView extends View {
                 x = leftSide;
                 break;
             case 2:
-                x = middle;
+                if (stateCount == 2) x = rightSide;
+                else x = middle;
                 break;
             case 3:
                 x = rightSide;

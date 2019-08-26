@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
     private ScheduleManager schedule;
     private SharedPreferences sharedPref;
     private int day;
+    private ScheduleViewModel scheduleViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
         setContentView(R.layout.activity_main);
 
         day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -72,9 +74,24 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
 
         tabLayout.setupWithViewPager(mViewPager);
 
-        toggleView.setStateCount(2);
-        toggleView.setToggle(1);
-        toggleView.setOnStateChangeListener(position -> schedule.setWeekNumber(position));
+        toggleView.setStateCount(sharedPref.getInt(getString(R.string.week_count), 1));
+        toggleView.setToggle(sharedPref.getInt(getString(R.string.current_week), 1) + 1);
+        toggleView.setOnStateChangeListener(this::setWeekNumber);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        scheduleViewModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
+    }
+
+
+    private void setWeekNumber(int weekNumber) {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.current_week), weekNumber - 1);
+        editor.apply();
+        scheduleViewModel.setWeek(weekNumber - 1);
     }
 
 
@@ -115,9 +132,7 @@ public class MainActivity extends AppCompatActivity implements LessonDialog.Less
             lesson.setTeacherName(teacher);
             lesson.setRoom(room);
 
-            ScheduleViewModel scheduleViewModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
-            scheduleViewModel.setDay(day);
-
+            scheduleViewModel.setLessons(day);
             scheduleViewModel.update(lesson);
         }
     }

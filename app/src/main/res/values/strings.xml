@@ -51,6 +51,10 @@
     <string name="choose_group">Choose group</string>
     <string name="choose_department">Choose department</string>
 
+    <!-- Strings related to WeekActivity activity-->
+    <string name="choose_week_count">How many different weeks do you have?</string>
+
+
     <!-- Strings related to ScheduleSettings activity-->
     <string name="empty_fields">Fields cannot be empty</string>
     <string name="start_field_empty">First, indicate the beginning of the lesson</string>
@@ -80,6 +84,9 @@
     <string name="department_name" translatable="false">departmentName</string>
     <string name="group_name" translatable="false">groupName</string>
     <string name="setup_stage" translatable="false">setupStage</string>
+    <string name="week_count" translatable="false">weekCount</string>
+    <string name="current_week" translatable="false">currentWeek</string>
+    <string name="title_activity_week" translatable="false">WeekActivity</string>
 
 
 </resources>

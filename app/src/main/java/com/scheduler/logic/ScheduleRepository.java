@@ -15,8 +15,10 @@ import java.util.List;
 class ScheduleRepository {
 
     private LessonDao lessonDao;
-    private LiveData<List<Lesson>> lessons;
+    //private LiveData<List<Lesson>> lessons;
     private ScheduleManager scheduleManager;
+    private int weekNumber;
+
 
     //for other tasks
     ScheduleRepository(Application application) {
@@ -25,15 +27,19 @@ class ScheduleRepository {
     }
 
     //for view model
-    ScheduleRepository(Application application, int day) {
+    ScheduleRepository(Application application, int weekNumber) {
+        this.weekNumber = weekNumber;
         LessonsDatabase lessonsDatabase = LessonsDatabase.getInstance(application);
         lessonDao = lessonsDatabase.lessonDao();
-        lessons = lessonDao.loadAllByDay(day);
         scheduleManager = new ScheduleManager(application);
     }
 
-    LiveData<List<Lesson>> getLessons() {
-        return lessons;
+    LiveData<List<Lesson>> getLessons(int day) {
+        return lessonDao.loadAllByDay(day, weekNumber);
+    }
+
+    LiveData<List<Lesson>> getLessons(int day, int week) {
+        return lessonDao.loadAllByDay(day, week);
     }
 
     int getLessonCount() {

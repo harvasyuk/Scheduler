@@ -101,13 +101,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
         viewHolder.endLessonText.setOnClickListener(v ->
                 onItemClick.getPosition(position, 'e', viewHolder.endLessonText.getText().toString()));
-
-//        // If the item wasn't previously displayed on screen, it's animated
-//        if (viewHolder.getAdapterPosition() > lastPosition) {
-//            Animation animation = AnimationUtils.loadAnimation(context, R.anim.item_animation_fall_down);
-//            viewHolder.itemView.startAnimation(animation);
-//            lastPosition = viewHolder.getAdapterPosition();
-//        }
     }
 
 

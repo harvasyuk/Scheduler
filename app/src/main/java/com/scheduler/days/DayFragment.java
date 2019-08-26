@@ -2,8 +2,10 @@ package com.scheduler.days;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.scheduler.Lesson;
-import com.scheduler.LessonTime;
 import com.scheduler.R;
 import com.scheduler.RecyclerViewClickListener;
 import com.scheduler.RecyclerViewTouchListener;
@@ -32,19 +33,30 @@ import java.util.List;
 public class DayFragment extends Fragment {
 
     //logic
-    int day;
+    protected int day;
     private Context context;
 
     //user interface
     private RecyclerView mRecyclerView;
     private DayAdapter dayAdapter;
 
+//    private List<Lesson> lessons1;
+//    private List<Lesson> lessons2;
+//    private List<Lesson> lessons3;
+    private SparseArray lessonArray;
+
+    private ScheduleViewModel scheduleViewModel;
+    SharedPreferences sharedPref;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_layout, container, false);
         context = getContext();
+
+        scheduleViewModel = ViewModelProviders.of(getActivity()).get(ScheduleViewModel.class);
+        sharedPref = this.getContext().getSharedPreferences(
+                this.getString(R.string.common_preferences), Context.MODE_PRIVATE);
 
         mRecyclerView = rootView.findViewById(R.id.mRecycler);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -94,26 +106,30 @@ public class DayFragment extends Fragment {
 
 
     private void updateLiveData() {
-
         if (day == Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
         {
             TimeViewModel timeViewModel = ViewModelProviders.of(this).get(TimeViewModel.class);
-            timeViewModel.getTimeList().observe(this, new androidx.lifecycle.Observer<List<LessonTime>>() {
-                @Override
-                public void onChanged(List<LessonTime> timeList) {
-                    dayAdapter.updateTimeList(timeList);
-                }
+            timeViewModel.getTimeList().observe(this, timeList -> dayAdapter.updateTimeList(timeList));
+        }
+
+        int weekCount = sharedPref.getInt(this.getString(R.string.week_count), 1);
+        SparseArray<List<Lesson>> lessonArray = new SparseArray<>();
+
+        for (int i = 0; i < weekCount; i++) {
+            int lessonN = i;
+
+            scheduleViewModel.setLessonsWeek(day, i);
+            scheduleViewModel.getLessons().observe(this, lessons -> {
+                lessonArray.put(lessonN, lessons);
+                scheduleViewModel.setWeek(sharedPref.getInt(getString(R.string.current_week), 0));
             });
         }
 
-        ScheduleViewModel scheduleViewModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
-        scheduleViewModel.setDay(day);
-        scheduleViewModel.getLessons().observe(this, new androidx.lifecycle.Observer<List<Lesson>>() {
-            @Override
-            public void onChanged(List<Lesson> lessons) {
-                dayAdapter.updateLessonList(lessons);
-                dayAdapter.notifyDataSetChanged();
-            }
+        scheduleViewModel.getWeek().observe(this, week -> {
+            if (week == 0) dayAdapter.updateLessonList(lessonArray.get(0));
+            else dayAdapter.updateLessonList(lessonArray.get(1));
+
+            dayAdapter.notifyDataSetChanged();
         });
     }
 

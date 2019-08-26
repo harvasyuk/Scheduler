@@ -26,14 +26,14 @@ public interface LessonDao {
     @Query("DELETE FROM lesson_table")
     void deleteAllLessons();
 
-    @Query("SELECT * FROM lesson_table WHERE day_of_week IN (:dayOfWeek)")
-    LiveData<List<Lesson>> loadAllByDay(int dayOfWeek);
+    @Query("SELECT * FROM lesson_table WHERE day_of_week IN (:dayOfWeek) AND week_number IN (:weekNumber)")
+    LiveData<List<Lesson>> loadAllByDay(int dayOfWeek, int weekNumber);
 
     @Query("SELECT * FROM lesson_table")
     List<Lesson> getAllLessons();
 
     //returns lesson count (for one day)
-    @Query("SELECT COUNT(id) FROM lesson_table WHERE day_of_week IN (:dayOfWeek)")
+    @Query("SELECT COUNT(id) FROM lesson_table WHERE day_of_week IN (:dayOfWeek) AND week_number IN (1)")
     int getLessonCountDay(int dayOfWeek);
 
     //also returns lesson count (for whole week)

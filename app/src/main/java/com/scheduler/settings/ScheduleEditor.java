@@ -115,7 +115,7 @@ public class ScheduleEditor extends AppCompatActivity {
             oldTimeEnd = lessonTime.getLessonEnd();
         } catch (Exception ignored) { }
 
-        if (listSize == 0 && lessonTime == null) {
+        if (listSize == 1 && lessonTime == null) {
             insert = true;
             lessonTime = new LessonTime(position);
             time = "08:00";

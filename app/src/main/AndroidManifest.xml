@@ -3,29 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.scheduler">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-
     <application
-        android:label="@string/app_name"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:fullBackupContent="@xml/backup_descriptor">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".firstSetting.WeekActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name=".firstSetting.WeekActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
-            <tools:validation testUrl="http://schedulemanager.com/scheduleManager" />
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
@@ -35,16 +37,18 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
                     android:host="schedulemanager.com"
-                    android:pathPrefix="/scheduleManager" />
+                    android:pathPrefix="/scheduleManager"
+                    android:scheme="http" />
             </intent-filter>
+
+            <tools:validation testUrl="http://schedulemanager.com/scheduleManager" />
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/action_settings"
-            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -53,8 +57,8 @@
         <activity
             android:name=".settings.ScheduleEditorActivity"
             android:label="@string/schedule_settings"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".settings.SettingsActivity">
+            android:parentActivityName=".settings.SettingsActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="com.scheduler.settings.ScheduleEditorActivity" />
 
@@ -64,32 +68,30 @@
         <activity
             android:name=".authentication.LoginActivity"
             android:label="Scheduler"
-            android:theme="@style/AppTheme.Blue"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-
+            android:theme="@style/AppTheme.Blue">
             <intent-filter>
                 <action android:name=".authentication.LoginActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity
             android:name=".firstSetting.SetupActivity"
             android:label="Welcome"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name=".firstSetting.FirstSettingActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".firstSetting.MatrixActivity"
             android:theme="@style/AppTheme.Blue">
@@ -100,7 +102,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".firstSetting.ScheduleEditorStartActivity" />
-
         <activity
             android:name=".settings.ScheduleEditor"
             android:label="@string/schedule_settings">
@@ -110,6 +111,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-    </application>
+    </application> <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>

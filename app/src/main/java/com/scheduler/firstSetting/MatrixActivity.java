@@ -1,7 +1,6 @@
 package com.scheduler.firstSetting;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,14 +9,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,7 +22,7 @@ import com.scheduler.UserAccount;
 import com.scheduler.logic.ScheduleManager;
 import com.scheduler.logic.TimeManager;
 
-public class MatrixActivity extends AppCompatActivity {
+public class MatrixActivity extends AppCompatActivity implements ScheduleManager.DownloadListener {
 
     private static final String LOCAL_DATABASE = "local";
     private static final String REMOTE_DATABASE = "remote";
@@ -95,10 +90,7 @@ public class MatrixActivity extends AppCompatActivity {
         loadButton.setOnClickListener(v -> {
             timeManager.downloadData();
             schedule.downloadData();
-
-            activityDone(2);
-            startActivity(new Intent(MatrixActivity.this, MainActivity.class));
-            finish();
+            schedule.setOnDownloadListener(this);
         });
     }
 
@@ -147,7 +139,7 @@ public class MatrixActivity extends AppCompatActivity {
             activityDone(2);
             timeManager.deleteTimes();
             schedule.deleteAllLessons();
-            startActivity(new Intent(MatrixActivity.this, ScheduleEditorStartActivity.class));
+            startActivity(new Intent(MatrixActivity.this, WeekActivity.class));
             finish();
         });
     }
@@ -164,5 +156,12 @@ public class MatrixActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getString(R.string.setup_stage), stage);
         editor.apply();
+    }
+
+    @Override
+    public void onDownloadCompleted() {
+        activityDone(2);
+        startActivity(new Intent(MatrixActivity.this, MainActivity.class));
+        finish();
     }
 }

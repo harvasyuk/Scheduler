@@ -13,6 +13,9 @@ public class Lesson {
     @ColumnInfo(name = "lesson_number")
     private String lessonNumber;
 
+    @ColumnInfo(name = "week_number")
+    private int weekNumber;
+
     @ColumnInfo(name = "day_of_week")
     private int dayOfWeek;
 
@@ -26,8 +29,9 @@ public class Lesson {
     private String room;
 
 
-    public Lesson(int id, int dayOfWeek, String lessonNumber, String subjectName, String teacherName, String room) {
+    public Lesson(int id, int weekNumber, int dayOfWeek, String lessonNumber, String subjectName, String teacherName, String room) {
         this.id = id;
+        this.weekNumber = weekNumber;
         this.dayOfWeek = dayOfWeek;
         this.lessonNumber = lessonNumber;
         this.subjectName = subjectName;
@@ -46,6 +50,10 @@ public class Lesson {
 
     public String getLessonNumber() {
         return lessonNumber;
+    }
+
+    public int getWeekNumber() {
+        return weekNumber;
     }
 
     public int getDayOfWeek() {

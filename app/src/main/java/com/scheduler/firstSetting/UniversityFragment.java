@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -19,12 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.scheduler.R;
 
 import java.util.ArrayList;
@@ -88,18 +84,16 @@ public class UniversityFragment extends Fragment {
 
         //getting key value of chosen university from database
         //and sending it to GroupFragment
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String university = universitiesKeyList.get(position);
-                model.selectUniversity(university);
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            String university = universitiesKeyList.get(position);
+            model.selectUniversity(university);
 
-                SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                        getString(R.string.common_preferences), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.university_name), university);
-                editor.apply();
-            }
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.common_preferences), Context.MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.university_name), university);
+            editor.apply();
         });
     }
 

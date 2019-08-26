@@ -3,7 +3,6 @@ package com.scheduler.logic;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.lifecycle.ViewModelProviders;
@@ -57,7 +56,6 @@ public class TimeManager {
 
     public TimeManager(Application application) {
         account = new UserAccount(application);
-        //prefs = PreferenceManager.getDefaultSharedPreferences(application);
         prefs = application.getSharedPreferences(application.getString(R.string.common_preferences), Context.MODE_PRIVATE);
         repository = new TimeRepository(application);
     }

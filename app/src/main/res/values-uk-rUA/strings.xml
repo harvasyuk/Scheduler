@@ -57,4 +57,5 @@
     <string name="no_schedule_text">Немає збереженого розкладу</string>
     <string name="create_own_schedule">Створити новий</string>
     <string name="load_existing_button">Завантажити</string>
+    <string name="choose_week_count">Скільки у вас різних тижнів?</string>
 </resources>

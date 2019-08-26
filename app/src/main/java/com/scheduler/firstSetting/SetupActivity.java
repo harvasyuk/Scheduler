@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -73,17 +72,19 @@ public class SetupActivity extends AppCompatActivity {
             } else {
                 ScheduleManager schedule = new ScheduleManager(getApplication());
                 schedule.downloadData();
-
-                Intent intent = new Intent(SetupActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                schedule.setOnDownloadListener(() -> {
+                    Intent intent = new Intent(SetupActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    activityDone();
+                    finish();
+                });
 
                 TimeManager time = new TimeManager(getApplication());
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                time.downloadData(prefs.getString("universityName", "chnu"));
+                SharedPreferences prefs = this.getSharedPreferences(getString(R.string.common_preferences), Context.MODE_PRIVATE);
+                time.downloadData(prefs.getString(getString(R.string.university_name), "chnu"));
 
-                activityDone();
-                startActivity(intent);
-                finish();
+
             }
         });
 
@@ -130,9 +131,8 @@ public class SetupActivity extends AppCompatActivity {
                     return new DepartmentFragment();
                 case 2:
                     return new GroupFragment();
-                default:
-                    return new UniversityFragment();
             }
+            return new UniversityFragment();
         }
 
         @Override
