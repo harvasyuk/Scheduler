@@ -1,5 +1,7 @@
 package com.scheduler;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +26,7 @@ public class MultiToggleView extends View {
 
     private Paint backgroundPaint;
     private Paint togglePaint;
+    private Paint toggleStrokePaint;
     private Paint shadowPaint;
     private Paint backgroundShadow;
     private Paint textPaint;
@@ -76,6 +80,13 @@ public class MultiToggleView extends View {
             x = (float) valueAnimator.getAnimatedValue("position");
             invalidate();
         });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                performClick();
+            }
+        });
 
         valuesHolder = PropertyValuesHolder.ofFloat("position", 0, 0);
 
@@ -94,6 +105,11 @@ public class MultiToggleView extends View {
         togglePaint = new Paint();
         togglePaint.setAntiAlias(true);
         togglePaint.setColor(toggleColor);
+
+        toggleStrokePaint = new Paint();
+        toggleStrokePaint.setStyle(Paint.Style.STROKE);
+        toggleStrokePaint.setAntiAlias(true);
+        toggleStrokePaint.setColor(0xff2196F3);
 
         shadowPaint = new Paint(0);
         shadowPaint.setColor(0xff2196F3);
@@ -170,6 +186,7 @@ public class MultiToggleView extends View {
         backgroundRadius = viewWidth * 0.025f;
         toggleRadius = viewWidth * 0.06f;
         toggleLength = viewWidth * 0.07f;
+        toggleStrokePaint.setStrokeWidth(viewWidth * 0.01f);
         textPaint.setTextSize(viewWidth * 0.055f);
     }
 
@@ -215,7 +232,13 @@ public class MultiToggleView extends View {
         togglePath.addRect(toggleRect, Path.Direction.CW);
 
         canvas.drawPath(togglePath, shadowPaint);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            canvas.drawPath(togglePath, toggleStrokePaint);
+        }
         canvas.drawPath(togglePath, togglePaint);
+
+
 
         togglePath.reset();
 
@@ -238,7 +261,6 @@ public class MultiToggleView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 animator.start();
-                performClick();
         }
         return true;
     }
