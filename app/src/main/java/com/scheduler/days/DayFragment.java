@@ -40,13 +40,10 @@ public class DayFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private DayAdapter dayAdapter;
 
-//    private List<Lesson> lessons1;
-//    private List<Lesson> lessons2;
-//    private List<Lesson> lessons3;
-    private SparseArray lessonArray;
-
     private ScheduleViewModel scheduleViewModel;
-    SharedPreferences sharedPref;
+    private SharedPreferences sharedPref;
+    private boolean weekSet = false;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -116,20 +113,21 @@ public class DayFragment extends Fragment {
         SparseArray<List<Lesson>> lessonArray = new SparseArray<>();
 
         for (int i = 0; i < weekCount; i++) {
-            int lessonN = i;
+            int currentWeek = i;
 
             scheduleViewModel.setLessonsWeek(day, i);
             scheduleViewModel.getLessons().observe(this, lessons -> {
-                lessonArray.put(lessonN, lessons);
+                lessonArray.put(currentWeek, lessons);
                 scheduleViewModel.setWeek(sharedPref.getInt(getString(R.string.current_week), 0));
             });
         }
 
         scheduleViewModel.getWeek().observe(this, week -> {
-            if (week == 0) dayAdapter.updateLessonList(lessonArray.get(0));
-            else dayAdapter.updateLessonList(lessonArray.get(1));
+            if (lessonArray.get(week) != null) {
+                dayAdapter.updateLessonList(lessonArray.get(week));
+                dayAdapter.notifyDataSetChanged();
+            }
 
-            dayAdapter.notifyDataSetChanged();
         });
     }
 

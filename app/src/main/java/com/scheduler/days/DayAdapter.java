@@ -175,7 +175,12 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return lessonsList.size();
+        //try {
+            return lessonsList.size();
+//        } catch (Exception e) {
+//            return 0;
+//        }
+
     }
 
 
